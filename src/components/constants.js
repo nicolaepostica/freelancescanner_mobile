@@ -1,0 +1,21 @@
+const PROTOCOL = 'http';
+// export const DOMAIN = 'freelancescanner.com';
+export const DOMAIN = '192.168.31.85:8000';
+export const BASE_URL = `${PROTOCOL}://${DOMAIN}`;
+export const GET_FEED_ALL_URL = `${BASE_URL}/api/v1/filter_project_all/`;
+export const GET_FAVORITES = `${BASE_URL}/api/v1/favorite/`;
+export const MANAGE_FAVORITES = `${BASE_URL}/api/v1/manage-favorites/`;
+export const READ_ALL_URL = `${BASE_URL}/api/v1/read-all/`;
+export const READ_ONE_URL = `${BASE_URL}/api/v1/filter_project/`;
+export const MANAGE_SKILLS = `${BASE_URL}/api/v1/manage-skills/`;
+export const MANAGE_LANGUAGES = `${BASE_URL}/api/v1/manage-languages/`;
+export const READ_CURRENT_URL = `${BASE_URL}/api/v1/filter_project/`;
+export const WSS_URL = `wss://${DOMAIN}/channel/room/`;
+export const LOG_URL = `${BASE_URL}/api/v1/mobile-log/`;
+export const FEEDBACK_URL = `${BASE_URL}/api/v1/feedback/`;
+
+export const REGISTRATION = 'registration';
+export const RESET_PASSWORD = 'reset_password';
+export const AUTHENTICATION = 'authentication';
+export const SETTINGS = 'settings';
+export const FAVORITE = 'favorite';

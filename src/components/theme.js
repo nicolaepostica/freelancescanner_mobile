@@ -1,0 +1,16 @@
+export const BORDER_COLOR = '#f1f2f2';
+export const HEADER_COLOR = '#27aae1';
+export const BORDER_COLOR_DANGER = '#FF0000';
+export const BACKGROUND_COLOR = '#fff';
+export const BACKGROUND_LINE_COLOR = '#f1f2f2';
+export const CONTENT_COLOR = '#27aae1';
+export const CONTENT_INACTIVE_COLOR = '#d0d0d0';
+export const TINT_COLOR = '#FFF';
+export const SWITCH_ON_COLOR = '#27aae1';
+export const SWITCH_OFF_COLOR = '#f2f2f2';
+export const FONT_FAMILY = 'Lato';
+export const FONT_FAMILY_BOLD = 'Lato-Bold';
+export const FONT_SIZE = 14;
+export const FONT_SIZE_TITLE = 16;
+export const BORDER_RADIUS = 30;
+export const BORDER_WIDTH = 1;
