@@ -13,6 +13,7 @@ export const READ_CURRENT_URL = `${BASE_URL}/api/v1/filter_project/`;
 export const WSS_URL = `wss://${DOMAIN}/channel/room/`;
 export const LOG_URL = `${BASE_URL}/api/v1/mobile-log/`;
 export const FEEDBACK_URL = `${BASE_URL}/api/v1/feedback/`;
+export const PAYMENT_URL = `${BASE_URL}/payment/yandex-pay/`;
 
 export const REGISTRATION = 'registration';
 export const RESET_PASSWORD = 'reset_password';

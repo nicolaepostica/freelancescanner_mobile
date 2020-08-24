@@ -144,7 +144,6 @@ const NotificationsStack = ({navigation}) => {
           headerTitleStyle: {
             fontFamily: FONT_FAMILY_BOLD,
           },
-
           headerLeft: () => (
             <TouchableOpacity onPress={() => navigation.openDrawer()}>
               <Image style={styles.image} source={hamburgerMenuIcon} />
@@ -408,7 +407,6 @@ const Authentication = () => {
             headers: {Authorization: token},
           })
           .then(({data: {chanel_list}}) => {
-            console.log(chanel_list);
             const [chanel] = chanel_list;
             const [filter] = chanel.filter_list;
             AsyncStorage.multiSet([
