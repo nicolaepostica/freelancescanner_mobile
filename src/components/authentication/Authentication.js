@@ -151,9 +151,9 @@ const NotificationsStack = ({navigation}) => {
           ),
           headerRight: () => (
             <View style={styles.headerRight}>
-              <TouchableOpacity onPress={() => navigation.navigate('Favorite')}>
-                <Image style={styles.image} source={notificationIcon} />
-              </TouchableOpacity>
+              {/*<TouchableOpacity onPress={() => navigation.navigate('Favorite')}>*/}
+              {/*  <Image style={styles.image} source={notificationIcon} />*/}
+              {/*</TouchableOpacity>*/}
               <TouchableOpacity onPress={() => navigation.navigate('Favorite')}>
                 <Image style={styles.image} source={favoriteIcon} />
               </TouchableOpacity>
