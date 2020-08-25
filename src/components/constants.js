@@ -1,6 +1,6 @@
-const PROTOCOL = 'http';
-// export const DOMAIN = 'freelancescanner.com';
-export const DOMAIN = '192.168.31.85:8000';
+const PROTOCOL = 'https';
+export const DOMAIN = 'freelancescanner.com';
+// export const DOMAIN = '192.168.31.85:8000';
 export const BASE_URL = `${PROTOCOL}://${DOMAIN}`;
 export const GET_FEED_ALL_URL = `${BASE_URL}/api/v1/filter_project_all/`;
 export const GET_FAVORITES = `${BASE_URL}/api/v1/favorite/`;

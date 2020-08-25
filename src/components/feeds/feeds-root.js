@@ -1,13 +1,13 @@
 import {
   ActivityIndicator,
   SafeAreaView,
-  ScrollView,
   FlatList,
   StatusBar,
   StyleSheet,
   Text,
   View,
   AppState,
+  TouchableOpacity,
 } from 'react-native';
 import React, {Component} from 'react';
 import {FAVORITE, GET_FEED_ALL_URL, MANAGE_FAVORITES, READ_ALL_URL, READ_CURRENT_URL, WSS_URL} from '../constants';
@@ -53,6 +53,7 @@ export default class FeedsRoot extends Component {
       appState: AppState.currentState,
       switchSilent: false,
       silentColor: CONTENT_INACTIVE_COLOR,
+      badge: '',
     };
   }
 
@@ -108,8 +109,9 @@ export default class FeedsRoot extends Component {
               this.setNotification(1);
             }
           }
+          this.setState({badge: `have ${this.state.feeds_new.length + 1} new projects`});
           this.setState(({feeds_new}) => {
-            return {feeds_new: [...feeds_new, JSON.parse(e.data).message.notification]};
+            return {feeds_new: [JSON.parse(e.data).message.notification, ...feeds_new]};
           });
         };
         this.state.wss.onerror = (e) => {
@@ -251,32 +253,13 @@ export default class FeedsRoot extends Component {
       });
   };
 
-  find_dimensions(layout) {
-    const {height} = layout;
-    this.setState({scrollContainerHeight: height});
-  }
-
-  onScrollScrollView({nativeEvent}) {
-    if (getScrollPosition(nativeEvent) === 0) {
-      this.flatListRef.scrollToOffset({offset: 50, animated: true});
-      this.setState({scroll_style: {flex: 1}, flatListScrollEnabled: true});
-    }
-  }
-
   onScrollFlatList({nativeEvent}, getUpdate) {
     if (getScrollPosition(nativeEvent) === 1) {
       if (getUpdate) {
         if (!this.state.isBot) {
-          this.setState({isBot: true});
+          this.setState({isBot: true, loading: true});
           this.getNextFeeds();
         }
-      }
-    }
-    if (getScrollPosition(nativeEvent) === 0) {
-      this.scrollViewRef.scrollTo({x: 0, y: 50, animated: true});
-      this.setState({scroll_style: {}});
-      if (this.state.feeds_new.length > 0) {
-        this.setState({flatListScrollEnabled: false});
       }
     }
   }
@@ -301,18 +284,15 @@ export default class FeedsRoot extends Component {
       });
   };
 
+  displayNews() {
+    this.setState(({feeds, feeds_new}) => {
+      return {feeds: [...feeds_new, ...feeds], feeds_new: [], badge: ''};
+    });
+    this.flatListRef.scrollToOffset({offset: 0, animated: false});
+  }
+
   render() {
-    const {
-      init,
-      loading,
-      feeds,
-      feeds_new,
-      is_new,
-      scroll_style,
-      scrollContainerHeight,
-      flatListScrollEnabled,
-      user_id,
-    } = this.state;
+    const {init, loading, feeds, flatListScrollEnabled, user_id, badge} = this.state;
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor={HEADER_COLOR} barStyle="light-content" />
@@ -323,71 +303,53 @@ export default class FeedsRoot extends Component {
             </View>
           ) : (
             <SafeAreaView style={styles.safeAreaViewStyle}>
-              <ScrollView
-                showsVerticalScrollIndicator={false}
-                ref={(ref) => (this.scrollViewRef = ref)}
-                contentContainerStyle={scroll_style}
-                onMomentumScrollEnd={(e) => this.onScrollScrollView(e)}
-                onScroll={(e) => this.onScrollScrollView(e)}
-                scrollEventThrottle={400}
-                onLayout={(event) => {
-                  this.find_dimensions(event.nativeEvent.layout);
-                }}>
-                {feeds_new.length > 0 || feeds.length > 0 ? (
-                  <View style={{height: scrollContainerHeight}}>
-                    <FlatList
-                      scrollEnabled={flatListScrollEnabled}
-                      showsVerticalScrollIndicator={false}
-                      ref={(ref) => (this.flatListRef = ref)}
-                      onScroll={(e) => this.onScrollFlatList(e, false)}
-                      scrollEventThrottle={400}
-                      onMomentumScrollEnd={(e) => this.onScrollFlatList(e, true)}
-                      data={feeds}
-                      renderItem={({item, index}) => (
-                        <FeedItem
-                          name="feeds"
-                          readAll={this.readAll}
-                          readCurrent={this.readCurrent}
-                          navigation={this.props.navigation}
-                          key={`feed-${item.id}`}
-                          item={item}
-                          index={index}
-                          itemStyle={styles.inverted}
-                          user_id={user_id}
-                          onFavoriteClick={this.onFavoriteClick}
-                        />
-                      )}
-                      keyExtractor={(item) => `${item.id}`}
-                      style={[styles.inverted]}
-                    />
-                  </View>
-                ) : (
-                  <View style={styles.row}>
-                    <Text style={styles.text}>Don't have updates!</Text>
-                  </View>
-                )}
-                {feeds_new.map((item, index) => (
-                  <FeedItem
-                    name="feeds_new"
-                    is_new={is_new}
-                    readAll={this.readAll}
-                    readCurrent={this.readCurrent}
-                    navigation={this.props.navigation}
-                    key={`feed-${item.id}`}
-                    index={index}
-                    item={item}
-                    itemStyle={{}}
-                    onFavoriteClick={this.onFavoriteClick}
+              {badge !== '' ? (
+                <View style={styles.badgeContainer}>
+                  <TouchableOpacity style={styles.badge} activeOpacity={0.5} onPress={() => this.displayNews()}>
+                    <Text style={styles.badgeText}>{badge}</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <></>
+              )}
+              {feeds.length > 0 ? (
+                <View>
+                  <FlatList
+                    scrollEnabled={flatListScrollEnabled}
+                    showsVerticalScrollIndicator={false}
+                    ref={(ref) => (this.flatListRef = ref)}
+                    onScroll={(e) => this.onScrollFlatList(e, false)}
+                    scrollEventThrottle={400}
+                    onMomentumScrollEnd={(e) => this.onScrollFlatList(e, true)}
+                    data={feeds}
+                    keyExtractor={(item) => `${item.id}`}
+                    renderItem={({item, index}) => (
+                      <FeedItem
+                        name="feeds"
+                        readAll={this.readAll}
+                        readCurrent={this.readCurrent}
+                        navigation={this.props.navigation}
+                        key={`feed-${item.id}`}
+                        item={item}
+                        index={index}
+                        user_id={user_id}
+                        onFavoriteClick={this.onFavoriteClick}
+                      />
+                    )}
                   />
-                ))}
-                {loading ? (
-                  <View style={styles.loader}>
-                    <ActivityIndicator size="large" color={CONTENT_COLOR} />
-                  </View>
-                ) : (
-                  <></>
-                )}
-              </ScrollView>
+                  {loading ? (
+                    <View style={styles.loader}>
+                      <ActivityIndicator size="large" color={CONTENT_COLOR} />
+                    </View>
+                  ) : (
+                    <></>
+                  )}
+                </View>
+              ) : (
+                <View style={styles.row}>
+                  <Text style={styles.text}>Don't have updates!</Text>
+                </View>
+              )}
             </SafeAreaView>
           )}
         </View>
@@ -464,7 +426,7 @@ const styles = StyleSheet.create({
   },
   loader: {
     position: 'absolute',
-    top: 0,
+    bottom: 0,
     left: 0,
     right: 0,
     justifyContent: 'center',
@@ -473,5 +435,27 @@ const styles = StyleSheet.create({
   },
   inverted: {
     transform: [{scaleY: -1}],
+  },
+  badgeContainer: {
+    marginTop: 3,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    zIndex: 5,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  badge: {
+    borderRadius: 25,
+    backgroundColor: CONTENT_COLOR,
+  },
+  badgeText: {
+    color: BACKGROUND_COLOR,
+    padding: 5,
+    fontSize: FONT_SIZE,
+    fontFamily: FONT_FAMILY,
   },
 });
