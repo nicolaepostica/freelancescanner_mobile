@@ -427,7 +427,6 @@ const Authentication = () => {
               ['username', `${username}`],
               ['chanel_id', `${chanel.id}`],
               ['filter_id', `${filter.id}`],
-              ['switchSilent', 'false'],
             ]).then(() => {
               dispatch({type: 'SIGN_IN', token});
             });
