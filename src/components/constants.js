@@ -1,7 +1,7 @@
 const PROTOCOL = 'https';
 export const DOMAIN = 'freelancescanner.com';
-// export const DOMAIN = '192.168.31.85:8000';
-export const BASE_URL = `${PROTOCOL}://${DOMAIN}`;
+export const BASE_URL = 'http://192.168.31.85:8000';
+// export const BASE_URL = `${PROTOCOL}://${DOMAIN}`;
 export const GET_FEED_ALL_URL = `${BASE_URL}/api/v1/filter_project_all/`;
 export const GET_FAVORITES = `${BASE_URL}/api/v1/favorite/`;
 export const MANAGE_FAVORITES = `${BASE_URL}/api/v1/manage-favorites/`;
@@ -17,6 +17,4 @@ export const PAYMENT_URL = `${BASE_URL}/payment/yandex-pay/`;
 
 export const REGISTRATION = 'registration';
 export const RESET_PASSWORD = 'reset_password';
-export const AUTHENTICATION = 'authentication';
-export const SETTINGS = 'settings';
 export const FAVORITE = 'favorite';

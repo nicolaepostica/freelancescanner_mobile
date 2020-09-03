@@ -333,17 +333,6 @@ export default class EditTopic extends Component {
                 onClickListElement={this.onClickListElement}
               />
             </View>
-            <View style={styles.descriptions}>
-              <Text h4 style={{color: this.state.silentColor}}>
-                Notification
-              </Text>
-              <Switch
-                trackColor={{true: SWITCH_ON_COLOR, false: SWITCH_OFF_COLOR}}
-                thumbColor={'#fff'}
-                onValueChange={this.onSwitchSilent}
-                value={this.state.switchSilent}
-              />
-            </View>
           </View>
         )}
       </View>

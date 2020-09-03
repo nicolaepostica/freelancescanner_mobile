@@ -32,10 +32,6 @@ export default class Registration extends Component {
     };
   }
 
-  onClickCancel = () => {
-    this.props.navigation.goBack();
-  };
-
   _register = () => {
     this._input_checker();
     this.setState({loading: true});
@@ -163,16 +159,10 @@ export default class Registration extends Component {
                 <Text style={styles.loginText}>Register</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.buttonContainer, styles.loginButton]}
-                activeOpacity={0.5}
-                onPress={this.onClickCancel}>
-                <Text style={styles.loginText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
                 style={[styles.haveAccountContainer]}
                 activeOpacity={0.5}
                 onPress={() => {
-                  this.props.navigation.navigate.goBack();
+                  this.props.navigation.goBack();
                 }}>
                 <Text style={styles.haveAccount}>Have an account? Log In</Text>
               </TouchableOpacity>
@@ -223,12 +213,13 @@ class ForgotPassword extends Component {
           email: this.state.email,
         })
         .then((response) => {
+          console.log(response);
           this.setState({displayInput: {display: 'none'}});
           this.setState({displayMessage: {}});
           log(RESET_PASSWORD, this.state, response);
           setTimeout(() => this.props.navigation.goBack(), 500);
         })
-        .catch(() => {});
+        .catch((e) => console.log(e));
     }
   };
 

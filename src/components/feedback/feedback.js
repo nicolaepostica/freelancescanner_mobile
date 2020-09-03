@@ -22,7 +22,8 @@ export default class FeedBack extends Component {
       title: 'Feed New',
       email: '',
       message: '',
-      danger: false,
+      dangerMessage: false,
+      dangerEmail: false,
       loading: false,
       done: false,
     };
@@ -33,22 +34,52 @@ export default class FeedBack extends Component {
   componentWillUnmount() {}
 
   sendFeedBack = () => {
-    this.setState({loading: true});
-    const data = {email: this.state.email, message: this.state.message};
-    axios
-      .post(FEEDBACK_URL, data)
-      .then((response) => {
-        console.log(response);
-        this.setState({done: true});
-      })
-      .catch((error) => {
-        this.setState({loading: false, danger: true});
-        console.log(error);
-      });
+    const {dangerEmail, message, email} = this.state;
+    if (message.length === 0) {
+      this.setState({dangerMessage: true});
+    }
+    if (email.length === 0) {
+      this.setState({dangerEmail: true});
+    }
+    if (!dangerEmail && !(email.length === 0) && !(message.length === 0)) {
+      console.log('send feedback');
+      this.setState({loading: true});
+      const data = {email: this.state.email, message: this.state.message};
+      axios
+        .post(FEEDBACK_URL, data)
+        .then((response) => {
+          console.log(response);
+          this.setState({done: true});
+        })
+        .catch((error) => {
+          this.setState({loading: false, danger: true});
+          console.log(error);
+        });
+    }
   };
 
+  changeEmail(email = '') {
+    email = email.replace(' ', '');
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (reg.test(email) === false) {
+      this.setState({dangerEmail: true});
+    } else {
+      this.setState({dangerEmail: false});
+    }
+    this.setState({email: email});
+  }
+
+  changeMessage(msg) {
+    if (msg.length === 0) {
+      this.setState({dangerMessage: true});
+    } else {
+      this.setState({dangerMessage: false});
+    }
+    this.setState({message: msg});
+  }
+
   render() {
-    const {email, message, danger, loading, done} = this.state;
+    const {email, message, dangerMessage, dangerEmail, loading, done} = this.state;
     return (
       <SafeAreaView style={styles.safeAreaView}>
         <ScrollView
@@ -70,26 +101,26 @@ export default class FeedBack extends Component {
           ) : (
             <View style={styles.container}>
               <StatusBar backgroundColor={HEADER_COLOR} barStyle="light-content" />
-              <View style={[styles.inputContainer, danger ? styles.danger : {}]}>
+              <View style={[styles.inputContainer, dangerEmail ? styles.danger : {}]}>
                 <TextInput
                   autoFocus={true}
                   style={styles.emailText}
                   placeholder="Email"
                   underlineColorAndroid="transparent"
                   value={email}
-                  onChangeText={(text) => this.setState({email: text})}
+                  onChangeText={(text) => this.changeEmail(text)}
                   onSubmitEditing={() => this.message.focus()}
                   blurOnSubmit={false}
                 />
               </View>
-              <View style={[styles.inputContainerMessage, danger ? styles.danger : {}]}>
+              <View style={[styles.inputContainerMessage, dangerMessage ? styles.danger : {}]}>
                 <TextInput
                   style={styles.messageText}
                   placeholder="Message"
                   multiline={true}
                   underlineColorAndroid="transparent"
                   value={message}
-                  onChangeText={(text) => this.setState({message: text})}
+                  onChangeText={(text) => this.changeMessage(text)}
                   ref={(input) => {
                     this.message = input;
                   }}

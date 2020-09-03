@@ -37,13 +37,10 @@ import Settings from '../setting';
 const hamburgerMenuIcon = require('../../resources/icons/menu.png');
 const arrowLeft = require('../../resources/icons/arrow-left.png');
 const favoriteIcon = require('../../resources/icons/heart-solid.png');
-// const notificationIcon = require('../../resources/icons/notification.png');
-const notificationIcon = require('../../resources/icons/bell-slash-solid.png');
+const notificationIcon = require('../../resources/icons/bell-solid.png');
+const disabledNotificationIcon = require('../../resources/icons/bell-slash-solid.png');
 const envelopeIcon = require('../../resources/icons/envelope.png');
 import {Loader} from '../spinner';
-import {connect} from 'react-redux';
-
-import * as action from '../../actions';
 import Favorite from '../favorite';
 import FeedBack from '../feedback';
 
@@ -129,6 +126,21 @@ const SettingStack = ({navigation}) => {
 
 const NavigatorNotification = createStackNavigator();
 const NotificationsStack = ({navigation}) => {
+  const [silent, setSilent] = useState(false);
+
+  useEffect(() => {
+    AsyncStorage.getItem('switchSilent').then((value) => {
+      setSilent(value === 'true');
+      console.log(value);
+    });
+  }, []);
+
+  const switchSilent = () => {
+    console.log(silent);
+    AsyncStorage.setItem('switchSilent', String(!silent));
+    setSilent(!silent);
+  };
+
   return (
     <NavigatorNotification.Navigator initialRouteName="Feeds" screenOptions={{gestureEnabled: true}}>
       <NavigatorNotification.Screen
@@ -151,9 +163,9 @@ const NotificationsStack = ({navigation}) => {
           ),
           headerRight: () => (
             <View style={styles.headerRight}>
-              {/*<TouchableOpacity onPress={() => navigation.navigate('Favorite')}>*/}
-              {/*  <Image style={styles.image} source={notificationIcon} />*/}
-              {/*</TouchableOpacity>*/}
+              <TouchableOpacity activeOpacity={0.8} onPress={() => switchSilent()}>
+                <Image style={styles.image} source={silent ? notificationIcon : disabledNotificationIcon} />
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => navigation.navigate('Favorite')}>
                 <Image style={styles.image} source={favoriteIcon} />
               </TouchableOpacity>
@@ -322,6 +334,7 @@ const SignInScreen = ({navigation}) => {
                 onSubmitEditing={() => signIn({username, password, setDanger, setLoading})}
               />
             </View>
+            <Text style={[styles.invalidText, danger ? {} : {display: 'none'}]}>Invalid Login or password</Text>
             <TouchableOpacity
               style={[styles.forgotPasswordContainer]}
               activeOpacity={0.5}
@@ -614,14 +627,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  invalidText: {
+    color: 'red',
+    fontFamily: FONT_FAMILY_BOLD,
+    fontSize: FONT_SIZE,
+    marginTop: 10,
+  },
 });
 
-const mapStateToProps = ({global}) => {
-  return {
-    token: global.token,
-  };
-};
-
-export default connect(mapStateToProps, action)(Authentication);
+export default Authentication;
 
 export {HomeScreen, SignInScreen};

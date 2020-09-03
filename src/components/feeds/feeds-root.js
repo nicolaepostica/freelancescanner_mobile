@@ -126,7 +126,7 @@ export default class FeedsRoot extends Component {
       id: 12345,
       title: 'Info',
       message: 'Your have a new project.',
-      playSound: false,
+      playSound: true,
       soundName: 'default',
       alert: false,
       badge: false,
@@ -286,9 +286,9 @@ export default class FeedsRoot extends Component {
 
   displayNews() {
     this.setState(({feeds, feeds_new}) => {
-      return {feeds: [...feeds_new, ...feeds], feeds_new: [], badge: ''};
+      return {feeds: feeds_new.concat(feeds), feeds_new: [], badge: ''};
     });
-    this.flatListRef.scrollToOffset({offset: 0, animated: false});
+    this.flatListRef.scrollToOffset({offset: 0, animated: true});
   }
 
   render() {
@@ -306,7 +306,7 @@ export default class FeedsRoot extends Component {
               {badge !== '' ? (
                 <View style={styles.badgeContainer}>
                   <TouchableOpacity style={styles.badge} activeOpacity={0.5} onPress={() => this.displayNews()}>
-                    <Text style={styles.badgeText}>{badge}</Text>
+                    <Text style={styles.badgeText}>You have new projects</Text>
                   </TouchableOpacity>
                 </View>
               ) : (
