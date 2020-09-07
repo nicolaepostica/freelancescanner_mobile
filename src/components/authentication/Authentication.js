@@ -302,7 +302,10 @@ const SignInScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <ScrollView contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps={'handled'}>
         {loading ? (
           <Loader />
         ) : (

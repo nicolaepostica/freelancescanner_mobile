@@ -149,7 +149,8 @@ export default class Registration extends Component {
       <SafeAreaView style={styles.safeAreaView}>
         <ScrollView
           contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps={'handled'}>
           {done ? (
             <View style={styles.container}>
               <Text style={[styles.sendMessageMail, {margin: 15}]}>
@@ -316,7 +317,8 @@ class ForgotPassword extends Component {
       <SafeAreaView style={styles.safeAreaView}>
         <ScrollView
           contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps={'handled'}>
           <View style={styles.container}>
             <Text style={[styles.invalid, invalid]}>Invalid email!</Text>
             <StatusBar backgroundColor={HEADER_COLOR} barStyle="light-content" />
