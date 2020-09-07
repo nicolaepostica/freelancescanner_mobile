@@ -29,10 +29,6 @@ export default class FeedBack extends Component {
     };
   }
 
-  componentDidMount() {}
-
-  componentWillUnmount() {}
-
   sendFeedBack = () => {
     const {dangerEmail, message, email} = this.state;
     if (message.length === 0) {
