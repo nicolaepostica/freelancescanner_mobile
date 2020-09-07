@@ -106,12 +106,11 @@ export default class FeedsRoot extends Component {
             // 'App is inactive'
             const silentMode = await AsyncStorage.getItem('switchSilent');
             if (silentMode === 'true') {
-              this.setNotification(1);
+              this.setNotification();
             }
           }
-          this.setState({badge: `have ${this.state.feeds_new.length + 1} new projects`});
           this.setState(({feeds_new}) => {
-            return {feeds_new: [JSON.parse(e.data).message.notification, ...feeds_new]};
+            return {feeds_new: [...JSON.parse(e.data).message.projects, ...feeds_new]};
           });
         };
         this.state.wss.onerror = (e) => {
@@ -121,11 +120,11 @@ export default class FeedsRoot extends Component {
     );
   };
 
-  setNotification = (current) => {
+  setNotification = () => {
     PushNotification.localNotification({
       id: 12345,
       title: 'Info',
-      message: 'Your have a new project.',
+      message: 'Your have a new projects.',
       playSound: true,
       soundName: 'default',
       alert: false,
