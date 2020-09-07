@@ -8,6 +8,7 @@ import {
   View,
   AppState,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import React, {Component} from 'react';
 import {FAVORITE, GET_FEED_ALL_URL, MANAGE_FAVORITES, READ_ALL_URL, READ_CURRENT_URL, WSS_URL} from '../constants';
@@ -53,7 +54,7 @@ export default class FeedsRoot extends Component {
       appState: AppState.currentState,
       switchSilent: false,
       silentColor: CONTENT_INACTIVE_COLOR,
-      badge: '',
+      badge: false,
     };
   }
 
@@ -110,7 +111,7 @@ export default class FeedsRoot extends Component {
             }
           }
           this.setState(({feeds_new}) => {
-            return {feeds_new: [...JSON.parse(e.data).message.projects, ...feeds_new]};
+            return {feeds_new: [...JSON.parse(e.data).message.projects, ...feeds_new], badge: true};
           });
         };
         this.state.wss.onerror = (e) => {
@@ -280,7 +281,7 @@ export default class FeedsRoot extends Component {
 
   displayNews() {
     this.setState(({feeds, feeds_new}) => {
-      return {feeds: feeds_new.concat(feeds), feeds_new: [], badge: ''};
+      return {feeds: feeds_new.concat(feeds), feeds_new: [], badge: false};
     });
     this.flatListRef.scrollToOffset({offset: 0, animated: true});
   }
@@ -297,10 +298,14 @@ export default class FeedsRoot extends Component {
             </View>
           ) : (
             <SafeAreaView style={styles.safeAreaViewStyle}>
-              {badge !== '' ? (
+              {badge ? (
                 <View style={styles.badgeContainer}>
                   <TouchableOpacity style={styles.badge} activeOpacity={0.5} onPress={() => this.displayNews()}>
                     <Text style={styles.badgeText}>You have new projects</Text>
+                    <Image
+                      style={styles.badgeIcon}
+                      source={require('../../resources/icons/hand-point-left-solid.png')}
+                    />
                   </TouchableOpacity>
                 </View>
               ) : (
@@ -443,6 +448,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   badge: {
+    flexDirection: 'row',
     borderRadius: 25,
     backgroundColor: CONTENT_COLOR,
   },
@@ -451,5 +457,12 @@ const styles = StyleSheet.create({
     padding: 5,
     fontSize: FONT_SIZE,
     fontFamily: FONT_FAMILY,
+  },
+  badgeIcon: {
+    width: FONT_SIZE,
+    height: FONT_SIZE,
+    margin: 8,
+    marginLeft: 0,
+    tintColor: BACKGROUND_COLOR,
   },
 });
