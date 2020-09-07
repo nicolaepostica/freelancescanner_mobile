@@ -132,7 +132,7 @@ export default class FeedsRoot extends Component {
       badge: false,
       vibrate: false,
     });
-    PushNotification.cancelLocalNotifications({id: 12345});
+    // PushNotification.cancelLocalNotifications({id: 12345});
   };
 
   getFeeds(url) {

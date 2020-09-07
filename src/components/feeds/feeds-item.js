@@ -71,27 +71,18 @@ const FeedItem = ({name, item, index, readCurrent, readAll, navigation, itemStyl
           <View style={{flex: 1}}>
             <Text style={styles.text_title}>{title}</Text>
           </View>
-          <View
-            style={{
-              backgroundColor: 'red',
-              borderRadius: BORDER_RADIUS,
-              top: 3,
-              right: 3,
-              width: 10,
-              height: 10,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          />
+          <View style={styles.projectNewIndicator} />
         </View>
       ) : (
         <Text style={styles.text_title}>{title}</Text>
       )}
       <View style={styles.isNewContainer}>
         <View style={styles.footerWrapper}>
-          <Text style={styles.text_title}>Budget:</Text>
-          <Text style={styles.text}>
-            {budget_minimum} - {budget_maximum} {sign}
+          <Text style={styles.text_title}>
+            Budget:
+            <Text style={styles.text}>
+              {' ' + budget_minimum} - {budget_maximum} {sign}
+            </Text>
           </Text>
         </View>
         <TouchableOpacity
@@ -100,18 +91,20 @@ const FeedItem = ({name, item, index, readCurrent, readAll, navigation, itemStyl
         </TouchableOpacity>
       </View>
       <View style={styles.footerWrapper}>
-        <Text style={styles.text_title}>Skills:</Text>
-        {skill_list.map((skill, index_skill) =>
-          skill_list.length !== index_skill + 1 ? (
-            <Text key={`skill_index-${index_skill}`} style={styles.text}>
-              {skill.name},
-            </Text>
-          ) : (
-            <Text key={`skill_index-${index_skill}`} style={styles.text}>
-              {skill.name}
-            </Text>
-          ),
-        )}
+        <Text style={styles.text_title}>
+          Skills:
+          {skill_list.map((skill, index_skill) =>
+            skill_list.length !== index_skill + 1 ? (
+              <Text key={`skill_index-${index_skill}`} style={styles.text}>
+                {' ' + skill.name},
+              </Text>
+            ) : (
+              <Text key={`skill_index-${index_skill}`} style={styles.text}>
+                {' ' + skill.name}
+              </Text>
+            ),
+          )}
+        </Text>
       </View>
       <View style={styles.timeStamp}>
         <Text style={styles.text}>{str_time}</Text>
@@ -134,8 +127,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   footerWrapper: {
-    flexWrap: 'wrap',
-    alignItems: 'flex-start',
+    // flexWrap: 'wrap',
+    // alignItems: 'flex-end',
     flexDirection: 'row',
   },
   timeStamp: {
@@ -184,6 +177,16 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     tintColor: CONTENT_COLOR,
+  },
+  projectNewIndicator: {
+    backgroundColor: 'red',
+    borderRadius: BORDER_RADIUS,
+    top: 3,
+    right: 3,
+    width: 10,
+    height: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

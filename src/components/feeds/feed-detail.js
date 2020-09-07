@@ -24,36 +24,46 @@ const FeedDetail = ({
           <Text style={styles.text_title}>{title}</Text>
         </View>
         <View style={styles.footerWrapper}>
-          <Text style={styles.text_title}>Country:</Text>
-          <Text style={styles.text}>{country}</Text>
-        </View>
-        <View style={styles.footerWrapper}>
-          <Text style={styles.text_title}>Country:</Text>
-          <Text style={styles.text}>Project type: {type}</Text>
-        </View>
-        <View style={styles.footerWrapper}>
-          <Text style={styles.text_title}>Budget:</Text>
-          <Text style={styles.text}>
-            {budget_minimum}-{budget_maximum} {sign}
+          <Text style={styles.text_title}>
+            Country:
+            <Text style={styles.text}>{' ' + country}</Text>
           </Text>
         </View>
         <View style={styles.footerWrapper}>
-          <Text style={styles.text_title}>Skills:</Text>
-          {skill_list.map((skill, index_skill) =>
-            skill_list.length !== index_skill + 1 ? (
-              <Text key={`skill-${index_skill}`} style={styles.text}>
-                {skill.name},{' '}
-              </Text>
-            ) : (
-              <Text key={`skill-${index_skill}`} style={styles.text}>
-                {skill.name}
-              </Text>
-            ),
-          )}
+          <Text style={styles.text_title}>
+            Project type:
+            <Text style={styles.text}>{' ' + type}</Text>
+          </Text>
         </View>
         <View style={styles.footerWrapper}>
-          <Text style={styles.text_title}>Description:</Text>
-          <Text style={styles.textDescription}>{description}</Text>
+          <Text style={styles.text_title}>
+            Budget:
+            <Text style={styles.text}>
+              {' ' + budget_minimum}-{budget_maximum} {sign}
+            </Text>
+          </Text>
+        </View>
+        <View style={styles.footerWrapper}>
+          <Text style={styles.text_title}>
+            Skills:
+            {skill_list.map((skill, index_skill) =>
+              skill_list.length !== index_skill + 1 ? (
+                <Text key={`skill-${index_skill}`} style={styles.text}>
+                  {' ' + skill.name},
+                </Text>
+              ) : (
+                <Text key={`skill-${index_skill}`} style={styles.text}>
+                  {' ' + skill.name}
+                </Text>
+              ),
+            )}
+          </Text>
+        </View>
+        <View style={styles.footerWrapper}>
+          <Text style={styles.text_title}>
+            Description:
+            <Text style={styles.textDescription}>{' ' + description}</Text>
+          </Text>
         </View>
         <View style={styles.linkView}>
           <TouchableOpacity
