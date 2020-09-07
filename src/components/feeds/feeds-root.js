@@ -157,29 +157,24 @@ export default class FeedsRoot extends Component {
 
   getNextFeeds() {
     const {next_feeds_url} = this.state;
-    if (next_feeds_url) {
+    if (next_feeds_url !== null) {
       this.setState({loading: true});
       axios
         .get(next_feeds_url, {headers: {Authorization: this.state.token}})
         .then(({data: {results, next}}) => {
-          if (next) {
-            this.setState(({feeds}) => {
-              return {
-                feeds: [...feeds, ...results],
-                next_feeds_url: next,
-                loading: false,
-                isBot: false,
-              };
-            });
-          } else {
-            this.setState({
-              feeds: results,
+          this.setState(({feeds}) => {
+            return {
+              feeds: [...feeds, ...results],
+              next_feeds_url: next,
               loading: false,
-            });
-          }
+            };
+          });
         })
         .catch((error) => {
           console.log(error);
+          this.setState({
+            loading: false,
+          });
         });
     } else {
       console.log("Don't have new");
