@@ -24,55 +24,126 @@ export default class Registration extends Component {
       email: '',
       password: '',
       re_password: '',
-      username_danger: false,
-      email_danger: false,
-      password_danger: false,
       done: false,
       loading: false,
+      dangerUsername: false,
+      dangerEmail: false,
+      dangerPassword: false,
+      dangerRePassword: false,
+      wrongEmail: false,
+      usedEmail: false,
+      usedUsername: false,
+      missingUsername: false,
+      shortPassword: false,
+      matchPassword: false,
+      commonPassword: false,
+      errorMessage: '',
     };
   }
 
   _register = () => {
-    this._input_checker();
-    this.setState({loading: true});
-    this.state.username_danger || this.state.email_danger || this.state.password_danger
-      ? this.setState({loading: true})
-      : axios
-          .post(`${BASE_URL}/api/v1/accounts/register/`, {
-            username: this.state.username,
-            email: this.state.email,
-            password: this.state.password,
-            password_confirm: this.state.re_password,
-          })
-          .then((response) => {
-            log(REGISTRATION, this.state, response, this.state.username);
-            this.setState({done: true, loading: false});
-          })
-          .catch((error) => {
-            console.log(error);
-            this.setState({username_danger: true, email_danger: true, loading: false});
-          });
+    this.setState({usedUsername: false, usedEmail: false, commonPassword: false});
+    if (this.submitUsername() && this.submitEmail() && this.submitPassword() && this.submitRePassword()) {
+      this.setState({loading: true});
+      axios
+        .post(`${BASE_URL}/api/v1/accounts/register/`, {
+          username: this.state.username,
+          email: this.state.email,
+          password: this.state.password,
+          password_confirm: this.state.re_password,
+        })
+        .then((response) => {
+          log(REGISTRATION, this.state, response, this.state.username);
+          this.setState({done: true, loading: false});
+        })
+        .catch(({response: {data}}) => {
+          if (data.username) {
+            console.log('username used');
+            this.setState({usedUsername: true});
+          } else {
+            if (data.email) {
+              console.log('email used');
+              this.setState({usedEmail: true});
+            } else {
+              console.log('password common');
+              this.setState({commonPassword: true});
+            }
+          }
+          this.setState({loading: false});
+        });
+    }
   };
 
-  _input_checker = () => {
-    this.state.username === '' ? this.setState({username_danger: true}) : this.setState({username_danger: false});
-    this.state.email === '' ? this.setState({email_danger: true}) : this.setState({email_danger: false});
-    this.state.password === '' || this.state.re_password === '' || this.state.password !== this.state.re_password
-      ? this.setState({password_danger: true})
-      : this.setState({password_danger: false});
+  submitUsername = () => {
+    // console.log('username');
+    if (this.state.username.length > 0) {
+      this.setState({missingUsername: false, dangerUsername: false});
+      return true;
+    } else {
+      this.setState({missingUsername: true, dangerUsername: true});
+      return false;
+    }
+  };
+
+  submitEmail = () => {
+    // console.log('email');
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (reg.test(this.state.email) === false) {
+      this.setState({dangerEmail: true, wrongEmail: true});
+      return false;
+    } else {
+      this.setState({dangerEmail: false, wrongEmail: false});
+      return true;
+    }
+  };
+
+  submitPassword = () => {
+    // console.log('pass');
+    if (this.state.password.length < 7) {
+      this.setState({shortPassword: true, dangerPassword: true});
+      return false;
+    } else {
+      this.setState({shortPassword: false});
+      if (!this.state.matchPassword) {
+        this.setState({dangerPassword: false});
+      }
+      return true;
+    }
+  };
+
+  submitRePassword = () => {
+    // console.log('re pass');
+    if (this.state.password !== this.state.re_password) {
+      this.setState({dangerPassword: true, dangerRePassword: true, matchPassword: true});
+      return false;
+    } else {
+      this.setState({matchPassword: false});
+      if (!this.state.shortPassword) {
+        this.setState({dangerPassword: false, dangerRePassword: false});
+      }
+      return true;
+    }
   };
 
   render() {
     const {
-      username_danger,
+      dangerUsername,
+      dangerEmail,
+      dangerPassword,
+      dangerRePassword,
       username: username_val,
-      email_danger,
       email: email_val,
-      password_danger,
       password: password_val,
       re_password: re_password_val,
       done,
       loading,
+      wrongEmail,
+      usedEmail,
+      usedUsername,
+      missingUsername,
+      shortPassword,
+      matchPassword,
+      commonPassword,
     } = this.state;
     return (
       <SafeAreaView style={styles.safeAreaView}>
@@ -97,7 +168,7 @@ export default class Registration extends Component {
           ) : (
             <View style={styles.container}>
               <StatusBar backgroundColor={HEADER_COLOR} barStyle="light-content" />
-              <View style={[styles.inputContainer, username_danger ? styles.danger : {}]}>
+              <View style={[styles.inputContainer, dangerUsername ? styles.danger : {}]}>
                 <TextInput
                   // autoFocus={true}
                   style={styles.inputs}
@@ -107,51 +178,80 @@ export default class Registration extends Component {
                   onChangeText={(username) => this.setState({username})}
                   onSubmitEditing={() => this.email.focus()}
                   blurOnSubmit={false}
+                  onBlur={() => {
+                    this.submitUsername();
+                  }}
                 />
               </View>
-              <View style={[styles.inputContainer, email_danger ? styles.danger : {}]}>
+              <View style={[styles.inputContainer, dangerEmail ? styles.danger : {}]}>
                 <TextInput
                   style={styles.inputs}
                   placeholder="Email"
                   underlineColorAndroid="transparent"
                   value={email_val}
-                  onChangeText={(email) => this.setState({email})}
+                  onChangeText={(email) => this.setState({email: email.replace(' ', '')})}
                   ref={(input) => {
                     this.email = input;
                   }}
                   onSubmitEditing={() => this.password.focus()}
                   blurOnSubmit={false}
+                  onBlur={() => {
+                    this.submitEmail();
+                  }}
                 />
               </View>
-              <View style={[styles.inputContainer, password_danger ? styles.danger : {}]}>
+              <View style={[styles.inputContainer, dangerPassword ? styles.danger : {}]}>
                 <TextInput
                   style={styles.inputs}
                   placeholder="Password"
                   secureTextEntry={true}
                   underlineColorAndroid="transparent"
                   value={password_val}
-                  onChangeText={(password) => this.setState({password})}
+                  onChangeText={(password) => {
+                    this.setState({password});
+                    if (this.state.matchPassword) {
+                      this.submitRePassword();
+                    }
+                  }}
                   ref={(input) => {
                     this.password = input;
                   }}
                   onSubmitEditing={() => this.re_password.focus()}
                   blurOnSubmit={false}
+                  onBlur={() => {
+                    this.submitPassword();
+                  }}
                 />
               </View>
-              <View style={[styles.inputContainer, password_danger ? styles.danger : {}]}>
+              <View style={[styles.inputContainer, dangerRePassword ? styles.danger : {}]}>
                 <TextInput
                   style={styles.inputs}
                   placeholder="Re Password"
                   secureTextEntry={true}
                   underlineColorAndroid="transparent"
                   value={re_password_val}
-                  onChangeText={(re_password) => this.setState({re_password})}
+                  onChangeText={(re_password) => {
+                    this.setState({re_password});
+                    if (this.state.matchPassword) {
+                      this.submitRePassword();
+                    }
+                  }}
                   ref={(input) => {
                     this.re_password = input;
                   }}
-                  onSubmitEditing={this._register}
+                  onSubmitEditing={() => this._register()}
+                  onBlur={() => {
+                    this.submitRePassword();
+                  }}
                 />
               </View>
+              <Text style={[styles.invalidText, wrongEmail ? {} : {display: 'none'}]}>Wrong e-mail address</Text>
+              <Text style={[styles.invalidText, usedEmail ? {} : {display: 'none'}]}>E-mail already used</Text>
+              <Text style={[styles.invalidText, usedUsername ? {} : {display: 'none'}]}>Username already used</Text>
+              <Text style={[styles.invalidText, missingUsername ? {} : {display: 'none'}]}>Username is missing</Text>
+              <Text style={[styles.invalidText, shortPassword ? {} : {display: 'none'}]}>Password is too short</Text>
+              <Text style={[styles.invalidText, matchPassword ? {} : {display: 'none'}]}>Passwords don't match</Text>
+              <Text style={[styles.invalidText, commonPassword ? {} : {display: 'none'}]}>Passwords is too common</Text>
               <TouchableOpacity
                 style={[styles.buttonContainer, styles.loginButton]}
                 activeOpacity={0.5}
@@ -184,19 +284,6 @@ class ForgotPassword extends Component {
       invalid: {display: 'none'},
     };
   }
-
-  validate = (text) => {
-    console.log(text);
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    if (reg.test(text) === false) {
-      console.log('Email is Not Correct');
-      this.setState({email: text});
-      return false;
-    } else {
-      this.setState({email: text});
-      console.log('Email is Correct');
-    }
-  };
 
   send_reset_link = () => {
     const {email} = this.state;
@@ -300,6 +387,7 @@ const styles = StyleSheet.create({
     color: CONTENT_COLOR,
     fontFamily: FONT_FAMILY_BOLD,
     fontSize: FONT_SIZE + 10,
+    textAlign: 'center',
   },
   danger: {
     borderWidth: 2,
@@ -353,5 +441,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignSelf: 'center',
     width: 250,
+  },
+  invalidText: {
+    color: 'red',
+    fontFamily: FONT_FAMILY_BOLD,
+    fontSize: FONT_SIZE,
+    marginBottom: 20,
   },
 });
