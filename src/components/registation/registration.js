@@ -125,6 +125,12 @@ export default class Registration extends Component {
     }
   };
 
+  changeEmail(email = '') {
+    email = email.replace(' ', '');
+    email = email.toLowerCase();
+    this.setState({email: email});
+  }
+
   render() {
     const {
       dangerUsername,
@@ -190,13 +196,16 @@ export default class Registration extends Component {
                   placeholder="Email"
                   underlineColorAndroid="transparent"
                   value={email_val}
-                  onChangeText={(email) => this.setState({email: email.replace(' ', '')})}
+                  onChangeText={(email) => this.changeEmail(email)}
                   ref={(input) => {
                     this.email = input;
                   }}
-                  onSubmitEditing={() => this.password.focus()}
+                  onSubmitEditing={() => {
+                    this.password.focus();
+                  }}
                   blurOnSubmit={false}
                   onBlur={() => {
+                    this.setState({email: email_val.toLowerCase()});
                     this.submitEmail();
                   }}
                 />
@@ -204,7 +213,7 @@ export default class Registration extends Component {
               <View style={[styles.inputContainer, dangerPassword ? styles.danger : {}]}>
                 <TextInput
                   style={styles.inputs}
-                  placeholder="Password"
+                  placeholder="Password (min 8 digits)"
                   secureTextEntry={true}
                   underlineColorAndroid="transparent"
                   value={password_val}
@@ -288,6 +297,7 @@ class ForgotPassword extends Component {
 
   send_reset_link = () => {
     const {email} = this.state;
+    this.setState({email: email.toLowerCase()});
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (reg.test(email) === false) {
       console.log('Email is Not Correct');
@@ -307,9 +317,20 @@ class ForgotPassword extends Component {
           log(RESET_PASSWORD, this.state, response);
           setTimeout(() => this.props.navigation.goBack(), 500);
         })
-        .catch((e) => console.log(e));
+        .catch((e) => console.log(e.data));
     }
   };
+
+  changeEmail(email = '') {
+    email = email.replace(' ', '');
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (reg.test(email) === false) {
+      this.setState({dangerEmail: true});
+    } else {
+      this.setState({dangerEmail: false});
+    }
+    this.setState({email: email});
+  }
 
   render() {
     const {displayInput, displayMessage, email, invalid} = this.state;
@@ -328,7 +349,7 @@ class ForgotPassword extends Component {
                 placeholder="Email"
                 underlineColorAndroid="transparent"
                 value={email}
-                onChangeText={(mail) => this.setState({email: mail})}
+                onChangeText={(mail) => this.changeEmail(mail)}
               />
             </View>
             <TouchableOpacity
