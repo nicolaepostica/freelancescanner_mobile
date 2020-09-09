@@ -171,7 +171,7 @@ export default class Favorite extends Component {
                 </View>
               ) : (
                 <View style={styles.row}>
-                  <Text style={styles.text}>Don't have favorites!</Text>
+                  <Text style={styles.text}>Don't have favorite projects!</Text>
                 </View>
               )}
               {loading ? (
