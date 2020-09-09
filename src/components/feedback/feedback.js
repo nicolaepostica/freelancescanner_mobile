@@ -80,7 +80,8 @@ export default class FeedBack extends Component {
       <SafeAreaView style={styles.safeAreaView}>
         <ScrollView
           contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps={'handled'}>
           {done ? (
             <View style={styles.containerDone}>
               <Text style={[styles.sendMessageMail, {margin: 15}]}>Successfully send!</Text>
@@ -107,6 +108,7 @@ export default class FeedBack extends Component {
                   onChangeText={(text) => this.changeEmail(text)}
                   onSubmitEditing={() => this.message.focus()}
                   blurOnSubmit={false}
+                  onBlur={() => this.setState({email: email.toLowerCase()})}
                 />
               </View>
               <View style={[styles.inputContainerMessage, dangerMessage ? styles.danger : {}]}>
