@@ -18,7 +18,7 @@ const FeedDetail = ({
   },
 }) => {
   return (
-    <ScrollView style={styles.scroll}>
+    <ScrollView style={styles.scroll} keyboardShouldPersistTaps={'handled'}>
       <View style={{flex: 1}}>
         <View style={styles.footerWrapper}>
           <Text style={styles.text_title}>{title}</Text>
