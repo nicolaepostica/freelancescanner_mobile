@@ -231,15 +231,6 @@ export default class EditTopic extends Component {
     AsyncStorage.setItem('switchSilent', state.toString());
   };
 
-  onSwitchSilent = (switchSilent) => {
-    let silentColor = CONTENT_INACTIVE_COLOR;
-    if (switchSilent) {
-      silentColor = CONTENT_COLOR;
-    }
-    this.setState({switchSilent, silentColor});
-    this._setSwitchSilent(switchSilent);
-  };
-
   render() {
     return (
       <View style={styles.root}>
@@ -263,6 +254,21 @@ export default class EditTopic extends Component {
               <CustomListView
                 name={'skill_list'}
                 list={this.state.filter.skill_list}
+                onClickListElement={this.onClickListElement}
+              />
+            </View>
+            <View style={styles.descriptions}>
+              <Text h4 style={styles.text}>
+                Languages:
+              </Text>
+              <TouchableOpacity activeOpacity={0.5} onPress={() => this.props.navigation.navigate('AddLanguage')}>
+                <Image style={styles.icon} source={require('../../resources/icons/plus.png')} />
+              </TouchableOpacity>
+            </View>
+            <View style={[styles.view_list_lang, {zIndex: 0}]}>
+              <CustomListView
+                name={'language_list'}
+                list={this.state.filter.language_list}
                 onClickListElement={this.onClickListElement}
               />
             </View>
@@ -318,21 +324,6 @@ export default class EditTopic extends Component {
               editable={this.state.filter.hourly_projects}
               onChange={this.onChangeRange}
             />
-            <View style={styles.descriptions}>
-              <Text h4 style={styles.text}>
-                Languages:
-              </Text>
-              <TouchableOpacity activeOpacity={0.5} onPress={() => this.props.navigation.navigate('AddLanguage')}>
-                <Image style={styles.icon} source={require('../../resources/icons/plus.png')} />
-              </TouchableOpacity>
-            </View>
-            <View style={[styles.view_list_lang, {zIndex: 0}]}>
-              <CustomListView
-                name={'language_list'}
-                list={this.state.filter.language_list}
-                onClickListElement={this.onClickListElement}
-              />
-            </View>
           </View>
         )}
       </View>
@@ -362,6 +353,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     paddingBottom: 10,
+    paddingTop: 10,
     flex: 1,
     backgroundColor: BACKGROUND_COLOR,
     color: CONTENT_COLOR,
@@ -395,7 +387,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   view_list_skill: {
-    flex: 2,
+    flex: 1,
   },
   topic: {
     flexDirection: 'row',

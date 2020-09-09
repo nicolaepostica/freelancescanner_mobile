@@ -13,7 +13,10 @@ const setTextColor = (cond) => {
 const CustomListView = ({list, onClickListElement, name}) => {
   return (
     <SafeAreaView style={styles.safeAreaViewStyle}>
-      <ScrollView style={styles.footerWrapperNC} contentContainerStyle={[styles.footerWrapper]}>
+      <ScrollView
+        style={styles.footerWrapperNC}
+        contentContainerStyle={[styles.footerWrapper]}
+        keyboardShouldPersistTaps={'handled'}>
         {list.map((item, index) => (
           <TouchableOpacity
             activeOpacity={0.5}

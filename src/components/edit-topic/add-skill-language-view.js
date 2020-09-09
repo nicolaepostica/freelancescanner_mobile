@@ -21,6 +21,7 @@ const setTextColor = (cond) => {
 
 const RenderItem = ({item, index, onValueChange}) => (
   <TouchableOpacity
+    activeOpacity={0.8}
     index={index}
     style={[styles.list_element, {backgroundColor: setTouchableOpacityColor(item.selected)}]}
     onPress={() => onValueChange(index, !item.selected, item.id)}>
@@ -41,7 +42,8 @@ const AddSkillLanguageView = ({list, onValueChange, slice, onScroll}) => {
         scrollEventThrottle={200}
         style={styles.listStyle}
         contentContainerStyle={[styles.footerWrapper]}
-        onMomentumScrollEnd={(e) => onScrollScrollView(e)}>
+        onMomentumScrollEnd={(e) => onScrollScrollView(e)}
+        keyboardShouldPersistTaps={'handled'}>
         {list.slice(0, slice).map((item, index) => (
           <RenderItem key={item.id} item={item} index={index} onValueChange={onValueChange} />
         ))}

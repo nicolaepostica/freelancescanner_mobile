@@ -131,7 +131,6 @@ const NotificationsStack = ({navigation}) => {
   useEffect(() => {
     AsyncStorage.getItem('switchSilent').then((value) => {
       setSilent(value === 'true');
-      console.log(value);
     });
   }, []);
 
