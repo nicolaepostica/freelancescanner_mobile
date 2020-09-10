@@ -227,10 +227,6 @@ export default class EditTopic extends Component {
       });
   };
 
-  _setSwitchSilent = (state) => {
-    AsyncStorage.setItem('switchSilent', state.toString());
-  };
-
   render() {
     return (
       <View style={styles.root}>
@@ -242,7 +238,7 @@ export default class EditTopic extends Component {
             <View style={styles.title}>
               <RemoveItems icon={this.state.trashIcon} onDelete={this.deleteSelectedSkillAndLanguage} />
             </View>
-            <View style={styles.descriptions}>
+            <View style={styles.skillsHeader}>
               <View>
                 <Text style={styles.text}>Skill's list:</Text>
               </View>
@@ -359,7 +355,7 @@ const styles = StyleSheet.create({
     color: CONTENT_COLOR,
   },
   title: {
-    margin: 20,
+    margin: 10,
     alignItems: 'center',
     position: 'absolute',
     justifyContent: 'center',
@@ -387,7 +383,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   view_list_skill: {
-    flex: 1,
+    flex: 2,
   },
   topic: {
     flexDirection: 'row',
@@ -397,6 +393,11 @@ const styles = StyleSheet.create({
   },
   descriptions: {
     paddingTop: 10,
+    paddingBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  skillsHeader: {
     paddingBottom: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',

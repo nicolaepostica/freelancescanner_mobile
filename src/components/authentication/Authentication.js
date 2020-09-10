@@ -301,6 +301,7 @@ const SignInScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
+      <StatusBar backgroundColor={HEADER_COLOR} barStyle="light-content" />
       <ScrollView
         contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}
         showsVerticalScrollIndicator={false}
@@ -309,7 +310,6 @@ const SignInScreen = ({navigation}) => {
           <Loader />
         ) : (
           <View style={styles.container}>
-            <StatusBar backgroundColor={HEADER_COLOR} barStyle="light-content" />
             <View style={[styles.inputContainer, danger ? styles.danger : {}]}>
               <TextInput
                 // autoFocus={true}
