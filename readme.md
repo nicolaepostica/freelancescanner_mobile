@@ -2,7 +2,8 @@ FreelanceScanner.com
 
 <h3>Pre required</h3>
 Install [CocoaPod](https://guides.cocoapods.org/using/getting-started.html)<br>
-Install [NodeJs](https://nodejs.org/en/)
+Install [NodeJs](https://nodejs.org/en/)<br>
+Install Xcode from AppStore
 
 
 <h3>Get project</h3>
