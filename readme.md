@@ -13,7 +13,7 @@ $ git clone https://gitlab.com/nicolae.postica2/freelancescanner_mobile.git
 $ cd freelancescanner_mobile
 ```
 
-<h3>Install dependency:</h3>
+<h3>Install dependencies:</h3>
 
 ```bash
 $ npm i
