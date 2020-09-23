@@ -59,6 +59,7 @@ export default class FeedsRoot extends Component {
   }
 
   componentDidMount() {
+    console.log('init app');
     this.initSettings();
     AppState.addEventListener('change', this._handleAppStateChange);
     this.props.navigation.addListener('focus', () => {
