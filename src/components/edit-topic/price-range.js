@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     marginTop: -15,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingBottom: 10,
   },
   from_to_input: {
     marginLeft: 15,
