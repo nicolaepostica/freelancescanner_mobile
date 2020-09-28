@@ -11,14 +11,31 @@ import {
   Image,
 } from 'react-native';
 import React, {Component} from 'react';
-import {FAVORITE, GET_FEED_ALL_URL, MANAGE_FAVORITES, READ_ALL_URL, READ_CURRENT_URL, WSS_URL} from '../constants';
+import {
+  FAVORITE,
+  GET_FEED_ALL_URL,
+  GET_STATE_URL,
+  MANAGE_FAVORITES,
+  READ_ALL_URL,
+  READ_CURRENT_URL,
+  WSS_URL,
+} from '../constants';
 import AsyncStorage from '@react-native-community/async-storage';
+import BackgroundTimer from 'react-native-background-timer';
 import PushNotification from 'react-native-push-notification';
 import axios from 'axios';
 import Spinner from '../spinner';
 import {FeedItem} from './feeds-item';
 import update from 'immutability-helper';
-import {BACKGROUND_COLOR, CONTENT_COLOR, CONTENT_INACTIVE_COLOR, FONT_FAMILY, FONT_SIZE, HEADER_COLOR} from '../theme';
+import {
+  BACKGROUND_COLOR,
+  CONTENT_COLOR,
+  CONTENT_INACTIVE_COLOR,
+  FONT_FAMILY,
+  FONT_FAMILY_BOLD,
+  FONT_SIZE,
+  HEADER_COLOR,
+} from '../theme';
 import {log} from '../../services/api-service';
 
 const getScrollPosition = ({layoutMeasurement, contentOffset, contentSize}) => {
@@ -55,11 +72,11 @@ export default class FeedsRoot extends Component {
       switchSilent: false,
       silentColor: CONTENT_INACTIVE_COLOR,
       badge: false,
+      subscribe_expiration: true,
     };
   }
 
   componentDidMount() {
-    console.log('init app');
     this.initSettings();
     AppState.addEventListener('change', this._handleAppStateChange);
     this.props.navigation.addListener('focus', () => {
@@ -68,6 +85,9 @@ export default class FeedsRoot extends Component {
         this.getFeeds(GET_FEED_ALL_URL);
       }
     });
+    BackgroundTimer.runBackgroundTimer(() => {
+      this.getState();
+    }, 30000);
   }
 
   componentWillUnmount() {
@@ -81,6 +101,36 @@ export default class FeedsRoot extends Component {
     }
   }
 
+  getState(set_action = true) {
+    axios
+      .get(GET_STATE_URL, {headers: {Authorization: this.state.token}})
+      .then(({data: {subscribe_expiration, have_updates, account_type}}) => {
+        console.log(subscribe_expiration);
+        if (account_type !== 'premium') {
+          if (subscribe_expiration < 0) {
+            if (!this.state.subscribe_expiration) {
+              this.setState({subscribe_expiration: true});
+            }
+          } else {
+            if (this.state.subscribe_expiration) {
+              this.setState({subscribe_expiration: false});
+            }
+          }
+        }
+        if (set_action) {
+          if (have_updates) {
+            AsyncStorage.getItem('switchSilent').then((value) => {
+              if (value === 'true') {
+                this.setNotification();
+              }
+            });
+            this.setState({badge: true});
+          }
+        }
+      })
+      .catch(() => {});
+  }
+
   _handleAppStateChange = (nextAppState) => {
     if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
       console.log('App is active');
@@ -88,6 +138,26 @@ export default class FeedsRoot extends Component {
       console.log('App is inactive');
     }
     this.setState({appState: nextAppState});
+  };
+
+  initSocket = (chanel_id) => {
+    const wss = new WebSocket(`${WSS_URL}${chanel_id}/`);
+    this.setState({wss});
+    this.state.wss.onmessage = async () => {
+      if (this.state.appState === 'active') {
+        // 'App is active'
+      } else {
+        // 'App is inactive'
+        const silentMode = await AsyncStorage.getItem('switchSilent');
+        if (silentMode === 'true') {
+          this.setNotification();
+        }
+      }
+      this.setState({badge: true});
+    };
+    this.state.wss.onerror = (e) => {
+      console.log(e.message);
+    };
   };
 
   initSettings = () => {
@@ -98,26 +168,8 @@ export default class FeedsRoot extends Component {
         chanel_id = Number(chanel_id);
         this.setState({token, filter_id, chanel_id, user_id, username});
         this.getFeeds(GET_FEED_ALL_URL);
-        // eslint-disable-next-line no-undef
-        const wss = new WebSocket(`${WSS_URL}${chanel_id}/`);
-        this.setState({wss});
-        this.state.wss.onmessage = async (e) => {
-          if (this.state.appState === 'active') {
-            // 'App is active'
-          } else {
-            // 'App is inactive'
-            const silentMode = await AsyncStorage.getItem('switchSilent');
-            if (silentMode === 'true') {
-              this.setNotification();
-            }
-          }
-          this.setState(({feeds_new}) => {
-            return {feeds_new: [...JSON.parse(e.data).message.projects, ...feeds_new], badge: true};
-          });
-        };
-        this.state.wss.onerror = (e) => {
-          console.log(e.message);
-        };
+        // this.initSocket(chanel_id);
+        this.getState(false);
       },
     );
   };
@@ -212,7 +264,7 @@ export default class FeedsRoot extends Component {
     this.setStateReadAll();
     axios
       .post(READ_ALL_URL, {param: 'clean'}, {headers: {Authorization: this.state.token}})
-      .then((response) => {
+      .then(() => {
         // log('read_all', this.state, response, this.state.username);
         this.setStateReadAll();
         this.setStateReadAllNew();
@@ -260,7 +312,7 @@ export default class FeedsRoot extends Component {
     }
   }
 
-  onFavoriteClick = ({name, index, project_id, user_id, item_id, favorite}) => {
+  onFavoriteClick = ({index, project_id, user_id, favorite}) => {
     const data = {project_id, user_id, action: favorite ? 'create' : 'delete'};
     axios
       .post(MANAGE_FAVORITES, data, {headers: {Authorization: this.state.token}})
@@ -281,14 +333,12 @@ export default class FeedsRoot extends Component {
   };
 
   displayNews() {
-    this.setState(({feeds, feeds_new}) => {
-      return {feeds: feeds_new.concat(feeds), feeds_new: [], badge: false};
-    });
-    this.flatListRef.scrollToOffset({offset: 0, animated: true});
+    this.setState({init: true});
+    this.getFeeds(GET_FEED_ALL_URL);
   }
 
   render() {
-    const {init, loading, feeds, flatListScrollEnabled, user_id, badge} = this.state;
+    const {init, loading, feeds, flatListScrollEnabled, user_id, badge, subscribe_expiration} = this.state;
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor={HEADER_COLOR} barStyle="light-content" />
@@ -299,6 +349,28 @@ export default class FeedsRoot extends Component {
             </View>
           ) : (
             <SafeAreaView style={styles.safeAreaViewStyle}>
+              {subscribe_expiration ? (
+                <View>
+                  <View style={styles.subscribeExpirationContainer}>
+                    <TouchableOpacity
+                      style={styles.subscribeExpiration}
+                      activeOpacity={0.5}
+                      onPress={() => this.props.navigation.navigate('Payment')}>
+                      <Text style={styles.subscribeExpirationText}>End of subscription!</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.subscribeExpirationContainer}>
+                    <TouchableOpacity
+                      style={styles.badge}
+                      activeOpacity={0.5}
+                      onPress={() => this.props.navigation.navigate('Payment')}>
+                      <Text style={styles.subscribeExpirationText}>Go to payment</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ) : (
+                <></>
+              )}
               {badge ? (
                 <View style={styles.badgeContainer}>
                   <TouchableOpacity style={styles.badge} activeOpacity={0.5} onPress={() => this.displayNews()}>
@@ -452,6 +524,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: 25,
     backgroundColor: CONTENT_COLOR,
+  },
+  subscribeExpiration: {
+    flexDirection: 'row',
+    borderRadius: 25,
+    backgroundColor: 'red',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // height: 40,
+  },
+  subscribeExpirationContainer: {
+    marginTop: 3,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    // zIndex: 5,
+    // position: 'absolute',
+    // top: 0,
+    // left: 0,
+    // right: 0,
+    alignItems: 'center',
+  },
+  subscribeExpirationText: {
+    color: BACKGROUND_COLOR,
+    padding: 10,
+    fontSize: FONT_SIZE,
+    fontFamily: FONT_FAMILY_BOLD,
   },
   badgeText: {
     color: BACKGROUND_COLOR,

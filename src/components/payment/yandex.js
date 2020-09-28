@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import {WebView} from 'react-native-webview';
-import {BASE_URL, PAYMENT_URL} from '../constants';
+import {GET_STATE_URL, PAYMENT_URL} from '../constants';
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
-import {StyleSheet, View, Text, Button, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {BACKGROUND_COLOR, CONTENT_COLOR, FONT_FAMILY, FONT_SIZE} from '../theme';
+import Spinner from '../spinner';
 
 class YandexKassa extends Component {
   handleWebViewNavigationStateChange = (newNavState) => {
@@ -16,10 +17,13 @@ class YandexKassa extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      init: true,
       token: '',
       username: '',
       url: '',
       payment_process: false,
+      subscribe_expiration: '',
+      account_type: '',
     };
   }
 
@@ -38,13 +42,37 @@ class YandexKassa extends Component {
   componentDidMount() {
     AsyncStorage.multiGet(['userToken', 'username']).then(([[[], token], [[], username]]) => {
       this.setState({token, username});
+      this.getState();
     });
   }
 
+  getState() {
+    axios
+      .get(GET_STATE_URL, {headers: {Authorization: this.state.token}})
+      .then(({data: {subscribe_expiration, account_type}}) => {
+        console.log(subscribe_expiration);
+        console.log(account_type);
+        if (subscribe_expiration < 0) {
+          subscribe_expiration = 'expired';
+        } else {
+          if (subscribe_expiration < 2) {
+            subscribe_expiration = `${subscribe_expiration} day`;
+          } else {
+            subscribe_expiration = `${subscribe_expiration} days`;
+          }
+        }
+        if (account_type === 'premium') {
+          subscribe_expiration = '*';
+        }
+        this.setState({subscribe_expiration, account_type, init: false});
+      })
+      .catch(() => {});
+  }
+
   render() {
-    const {payment_process, url} = this.state;
+    const {payment_process, url, init} = this.state;
     return (
-      <View style={{flex: 1}}>
+      <View style={styles.root}>
         {payment_process ? (
           <WebView
             source={{uri: url}}
@@ -52,7 +80,17 @@ class YandexKassa extends Component {
           />
         ) : (
           <View style={styles.container}>
-            <Text style={styles.text}>Subscribe for one month!</Text>
+            {init ? (
+              <View style={styles.spinnerView}>
+                <Spinner />
+              </View>
+            ) : (
+              <>
+                <Text style={styles.text}>Current Plan: "{this.state.account_type}"</Text>
+                <Text style={styles.text}>Expiration time: "{this.state.subscribe_expiration}"</Text>
+              </>
+            )}
+            <Text style={styles.text}>Subscribe for one more month!</Text>
             <TouchableOpacity style={styles.buttonContainer} activeOpacity={0.5} onPress={() => this.getPaymentUrl()}>
               <Text style={styles.buttonText}>Pay</Text>
             </TouchableOpacity>
@@ -64,6 +102,9 @@ class YandexKassa extends Component {
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
