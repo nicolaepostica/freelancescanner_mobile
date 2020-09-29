@@ -151,9 +151,9 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('freelancescanner.keystore')
+            storeFile file('keystore.jks')
             storePassword 'freelancescanner'
-            keyAlias 'freelancescanner'
+            keyAlias 'upload'
             keyPassword 'freelancescanner'
         }
     }
