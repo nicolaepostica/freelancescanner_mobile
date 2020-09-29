@@ -98,7 +98,7 @@ export default class AddLanguage extends Component {
               autoFocus={false}
               returnKeyType="done"
               style={styles.inputs}
-              placeholder="Enter skill ..."
+              placeholder="Enter language ..."
               underlineColorAndroid="transparent"
               value={search}
               onChangeText={this.onChangeSearch}
