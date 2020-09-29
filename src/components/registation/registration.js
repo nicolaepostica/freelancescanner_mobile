@@ -126,8 +126,6 @@ export default class Registration extends Component {
   };
 
   changeEmail(email = '') {
-    email = email.replace(' ', '');
-    email = email.toLowerCase();
     this.setState({email: email});
   }
 
@@ -201,6 +199,10 @@ export default class Registration extends Component {
                     this.email = input;
                   }}
                   onSubmitEditing={() => {
+                    let email = this.state.email;
+                    email = email.replace(' ', '');
+                    email = email.toLowerCase();
+                    this.setState({email});
                     this.password.focus();
                   }}
                   blurOnSubmit={false}

@@ -16,11 +16,13 @@ import {
   FONT_SIZE,
 } from '../theme';
 import {ApiService} from '../../services/api-service';
+import {Loader} from '../spinner';
 
 export default class AddSkill extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      init: true,
       token: '',
       filter_id: null,
       title: 'Add skills',
@@ -42,7 +44,7 @@ export default class AddSkill extends Component {
       this.setState({token: userToken, filter_id: Number(filter_id)});
       this.api = new ApiService(userToken);
       const skills = await this.api.getSkills();
-      this.setState({skillList: skills, skillAll: skills});
+      this.setState({skillList: skills, skillAll: skills, init: false});
     });
   }
 
@@ -90,33 +92,39 @@ export default class AddSkill extends Component {
   };
 
   render() {
-    const {search, skillList, slice} = this.state;
+    const {search, skillList, slice, init} = this.state;
     return (
       <View style={styles.container}>
-        <View style={styles.searchView}>
-          <View style={styles.searchArrow}>
-            <Image style={styles.icon} source={require('../../resources/icons/search.png')} />
-          </View>
-          <View style={styles.searchBarView}>
-            <TextInput
-              autoFocus={false}
-              returnKeyType="done"
-              style={styles.inputs}
-              placeholder="Enter skill ..."
-              underlineColorAndroid="transparent"
-              value={search}
-              onChangeText={this.onChangeSearch}
-            />
-          </View>
-        </View>
-        <View style={styles.view_list_skill}>
-          <AddSkillLanguageView
-            list={skillList}
-            onValueChange={this.AddSkillClick}
-            slice={slice}
-            onScroll={this.onScroll}
-          />
-        </View>
+        {init ? (
+          <Loader />
+        ) : (
+          <>
+            <View style={styles.searchView}>
+              <View style={styles.searchArrow}>
+                <Image style={styles.icon} source={require('../../resources/icons/search.png')} />
+              </View>
+              <View style={styles.searchBarView}>
+                <TextInput
+                  autoFocus={false}
+                  returnKeyType="done"
+                  style={styles.inputs}
+                  placeholder="Enter skill ..."
+                  underlineColorAndroid="transparent"
+                  value={search}
+                  onChangeText={this.onChangeSearch}
+                />
+              </View>
+            </View>
+            <View style={styles.view_list_skill}>
+              <AddSkillLanguageView
+                list={skillList}
+                onValueChange={this.AddSkillClick}
+                slice={slice}
+                onScroll={this.onScroll}
+              />
+            </View>
+          </>
+        )}
       </View>
     );
   }
