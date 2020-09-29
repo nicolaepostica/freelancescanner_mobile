@@ -92,20 +92,19 @@ export default class FeedsRoot extends Component {
 
   componentWillUnmount() {
     AppState.addEventListener('change', this._handleAppStateChange);
-    try {
-      this.state.wss.onclose = (e) => {
-        console.log(e.code, e.reason);
-      };
-    } catch (e) {
-      console.log(e);
-    }
+    // try {
+    //   this.state.wss.onclose = (e) => {
+    //     console.log(e.code, e.reason);
+    //   };
+    // } catch (e) {
+    //   console.log(e);
+    // }
   }
 
   getState(set_action = true) {
     axios
       .get(GET_STATE_URL, {headers: {Authorization: this.state.token}})
       .then(({data: {subscribe_expiration, have_updates, account_type}}) => {
-        console.log(subscribe_expiration);
         if (account_type !== 'premium') {
           if (subscribe_expiration < 0) {
             if (!this.state.subscribe_expiration) {
@@ -168,7 +167,6 @@ export default class FeedsRoot extends Component {
         chanel_id = Number(chanel_id);
         this.setState({token, filter_id, chanel_id, user_id, username});
         this.getFeeds(GET_FEED_ALL_URL);
-        // this.initSocket(chanel_id);
         this.getState(false);
       },
     );
