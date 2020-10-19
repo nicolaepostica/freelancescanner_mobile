@@ -92,13 +92,6 @@ export default class FeedsRoot extends Component {
 
   componentWillUnmount() {
     AppState.addEventListener('change', this._handleAppStateChange);
-    // try {
-    //   this.state.wss.onclose = (e) => {
-    //     console.log(e.code, e.reason);
-    //   };
-    // } catch (e) {
-    //   console.log(e);
-    // }
   }
 
   getState(set_action = true) {
