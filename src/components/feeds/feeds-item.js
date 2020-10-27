@@ -51,7 +51,7 @@ const datetimeTemplate = (local_time) => {
   const hour = datetimeFormater(local_time.getHours());
   const minute = datetimeFormater(local_time.getMinutes());
   const date = datetimeFormater(local_time.getDate());
-  const month = datetimeFormater(local_time.getMonth());
+  const month = datetimeFormater(local_time.getMonth() + 1);
   const fullYear = local_time.getFullYear();
   return `${hour}:${minute} ${date}-${month}-${fullYear}`;
 };

@@ -8,12 +8,6 @@ import {BACKGROUND_COLOR, CONTENT_COLOR, FONT_FAMILY, FONT_SIZE} from '../theme'
 import Spinner from '../spinner';
 
 class YandexKassa extends Component {
-  handleWebViewNavigationStateChange = (newNavState) => {
-    if (newNavState.url === 'https://freelancescanner.com/blank/') {
-      this.setState({payment_process: false});
-    }
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -27,6 +21,20 @@ class YandexKassa extends Component {
     };
   }
 
+  componentDidMount() {
+    AsyncStorage.multiGet(['userToken', 'username']).then(([[[], token], [[], username]]) => {
+      this.setState({token, username});
+      this.getState();
+    });
+  }
+
+  handleWebViewNavigationStateChange = (newNavState) => {
+    if (newNavState.url === 'https://freelancescanner.com/blank/') {
+      this.setState({payment_process: false});
+      this.getState();
+    }
+  };
+
   getPaymentUrl() {
     this.setState({payment_process: true});
     axios
@@ -37,13 +45,6 @@ class YandexKassa extends Component {
       .catch((e) => {
         console.log(e);
       });
-  }
-
-  componentDidMount() {
-    AsyncStorage.multiGet(['userToken', 'username']).then(([[[], token], [[], username]]) => {
-      this.setState({token, username});
-      this.getState();
-    });
   }
 
   getState() {
