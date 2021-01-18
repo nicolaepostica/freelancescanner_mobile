@@ -18,7 +18,6 @@ import {
   MANAGE_FAVORITES,
   READ_ALL_URL,
   READ_CURRENT_URL,
-  WSS_URL,
 } from '../constants';
 import AsyncStorage from '@react-native-community/async-storage';
 import BackgroundTimer from 'react-native-background-timer';
@@ -67,7 +66,6 @@ export default class FeedsRoot extends Component {
       scroll_style: {},
       flatListScrollEnabled: true,
       scrollContainerHeight: 600,
-      wss: null,
       appState: AppState.currentState,
       switchSilent: false,
       silentColor: CONTENT_INACTIVE_COLOR,
@@ -87,7 +85,7 @@ export default class FeedsRoot extends Component {
     });
     BackgroundTimer.runBackgroundTimer(() => {
       this.getState();
-    }, 30000);
+    }, 5000);
   }
 
   componentWillUnmount() {
@@ -111,11 +109,18 @@ export default class FeedsRoot extends Component {
         }
         if (set_action) {
           if (have_updates) {
-            AsyncStorage.getItem('switchSilent').then((value) => {
-              if (value === 'true') {
+            if (this.state.appState === 'active') {
+              // 'App is active'
+              console.log('do Dispatch Notifications');
+              this.setNotification();
+            } else {
+              // 'App is inactive'
+              const silentMode = AsyncStorage.getItem('switchSilent');
+              if (silentMode === 'true') {
+                console.log('Dispatch Notifications');
                 this.setNotification();
               }
-            });
+            }
             this.setState({badge: true});
           }
         }
@@ -130,26 +135,6 @@ export default class FeedsRoot extends Component {
       console.log('App is inactive');
     }
     this.setState({appState: nextAppState});
-  };
-
-  initSocket = (chanel_id) => {
-    const wss = new WebSocket(`${WSS_URL}${chanel_id}/`);
-    this.setState({wss});
-    this.state.wss.onmessage = async () => {
-      if (this.state.appState === 'active') {
-        // 'App is active'
-      } else {
-        // 'App is inactive'
-        const silentMode = await AsyncStorage.getItem('switchSilent');
-        if (silentMode === 'true') {
-          this.setNotification();
-        }
-      }
-      this.setState({badge: true});
-    };
-    this.state.wss.onerror = (e) => {
-      console.log(e.message);
-    };
   };
 
   initSettings = () => {
@@ -172,9 +157,9 @@ export default class FeedsRoot extends Component {
       message: 'Your have a new projects.',
       playSound: true,
       soundName: 'default',
-      alert: false,
-      badge: false,
-      vibrate: false,
+      alert: true,
+      badge: true,
+      vibrate: true,
     });
     // PushNotification.cancelLocalNotifications({id: 12345});
   };
@@ -324,7 +309,7 @@ export default class FeedsRoot extends Component {
   };
 
   displayNews() {
-    this.setState({init: true});
+    this.setState({init: true, badge: false});
     this.getFeeds(GET_FEED_ALL_URL);
   }
 
