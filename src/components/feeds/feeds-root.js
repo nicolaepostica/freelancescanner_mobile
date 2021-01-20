@@ -83,9 +83,10 @@ export default class FeedsRoot extends Component {
         this.getFeeds(GET_FEED_ALL_URL);
       }
     });
+    BackgroundTimer.start();
     BackgroundTimer.runBackgroundTimer(() => {
       this.getState();
-    }, 5000);
+    }, 30000);
   }
 
   componentWillUnmount() {
@@ -111,15 +112,13 @@ export default class FeedsRoot extends Component {
           if (have_updates) {
             if (this.state.appState === 'active') {
               // 'App is active'
-              console.log('do Dispatch Notifications');
-              this.setNotification();
             } else {
               // 'App is inactive'
-              const silentMode = AsyncStorage.getItem('switchSilent');
-              if (silentMode === 'true') {
-                console.log('Dispatch Notifications');
-                this.setNotification();
-              }
+              AsyncStorage.getItem('switchSilent').then((silentMode) => {
+                if (silentMode === 'true') {
+                  this.setNotification();
+                }
+              });
             }
             this.setState({badge: true});
           }

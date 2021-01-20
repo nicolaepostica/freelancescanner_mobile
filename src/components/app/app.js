@@ -22,7 +22,7 @@ const App = () => {
     },
     permissions: {
       alert: true,
-      badge: true,
+      badge: false,
       sound: true,
     },
     popInitialNotification: true,
