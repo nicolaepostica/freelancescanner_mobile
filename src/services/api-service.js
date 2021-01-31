@@ -154,14 +154,15 @@ class ApiService {
 }
 
 const log = (action, state, response, user = '') => {
-  axios
-    .post(LOG_URL, {action: action, response: response, state: state, user: user})
-    .then(({data}) => {
-      return {...data, status: 200};
-    })
-    .catch(() => {
-      return {status: 400};
-    });
+  // ToDo
+  // axios
+  //   .post(LOG_URL, {action: action, response: response, state: state, user: user})
+  //   .then(({data}) => {
+  //     return {...data, status: 200};
+  //   })
+  //   .catch(() => {
+  //     return {status: 400};
+  //   });
 };
 
 export {AccountService, ApiService, log};
