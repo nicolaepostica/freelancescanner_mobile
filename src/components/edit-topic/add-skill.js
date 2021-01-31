@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Image, TextInput} from 'react-native';
+import {View, StyleSheet, Image, TextInput, TouchableOpacity, Text} from 'react-native';
 import 'react-native-gesture-handler';
 import AddSkillLanguageView from './add-skill-language-view';
 import update from 'immutability-helper';
@@ -31,6 +31,7 @@ export default class AddSkill extends Component {
       slice: 50,
       skillAll: [],
       skillList: [],
+      toEditSkills: [],
     };
     this.api = null;
   }
@@ -59,16 +60,34 @@ export default class AddSkill extends Component {
         }),
       },
       () => {
-        axios.post(
-          `${BASE_URL}/api/v1/manage-skills/`,
-          {
-            list: [this.state.skillList[index]],
-            filter_id: this.state.filter_id,
-          },
-          {headers: {Authorization: this.state.token}},
-        );
+        const skill = this.state.skillList[index];
+        const skillInEdit = this.state.toEditSkills.find((n) => n.id === skill.id);
+        if (skillInEdit) {
+          const skillIndex = this.state.toEditSkills.map((m) => m.id).indexOf(skill.id);
+          this.setState(({toEditSkills}) => {
+            toEditSkills.splice(skillIndex, 1);
+            return {toEditSkills: toEditSkills};
+          });
+        } else {
+          this.setState(({toEditSkills}) => {
+            return {toEditSkills: [...toEditSkills, skill]};
+          });
+        }
       },
     );
+  };
+
+  saveEditedSkills = () => {
+    axios
+      .post(
+        `${BASE_URL}/api/v1/manage-skills/`,
+        {
+          list: this.state.toEditSkills,
+          filter_id: this.state.filter_id,
+        },
+        {headers: {Authorization: this.state.token}},
+      )
+      .then(() => this.setState({toEditSkills: []}));
   };
 
   search(nameKey, myArray) {
@@ -92,28 +111,37 @@ export default class AddSkill extends Component {
   };
 
   render() {
-    const {search, skillList, slice, init} = this.state;
+    const {search, skillList, slice, toEditSkills, init} = this.state;
     return (
       <View style={styles.container}>
         {init ? (
           <Loader />
         ) : (
           <>
-            <View style={styles.searchView}>
-              <View style={styles.searchArrow}>
-                <Image style={styles.icon} source={require('../../resources/icons/search.png')} />
+            <View style={{flexDirection: 'row'}}>
+              <View style={styles.searchView}>
+                <View style={styles.searchArrow}>
+                  <Image style={styles.icon} source={require('../../resources/icons/search.png')} />
+                </View>
+                <View style={styles.searchBarView}>
+                  <TextInput
+                    autoFocus={false}
+                    returnKeyType="done"
+                    style={styles.inputs}
+                    placeholder="Enter skill ..."
+                    underlineColorAndroid="transparent"
+                    value={search}
+                    onChangeText={this.onChangeSearch}
+                  />
+                </View>
               </View>
-              <View style={styles.searchBarView}>
-                <TextInput
-                  autoFocus={false}
-                  returnKeyType="done"
-                  style={styles.inputs}
-                  placeholder="Enter skill ..."
-                  underlineColorAndroid="transparent"
-                  value={search}
-                  onChangeText={this.onChangeSearch}
-                />
-              </View>
+              {toEditSkills.length > 0 ? (
+                <TouchableOpacity style={styles.saveButton} onPress={this.saveEditedSkills}>
+                  <Text style={styles.saveButtonText}>Save</Text>
+                </TouchableOpacity>
+              ) : (
+                <></>
+              )}
             </View>
             <View style={styles.view_list_skill}>
               <AddSkillLanguageView
@@ -139,6 +167,7 @@ const styles = StyleSheet.create({
     color: CONTENT_COLOR,
   },
   searchView: {
+    flex: 1,
     borderRadius: BORDER_RADIUS,
     borderWidth: BORDER_WIDTH,
     borderColor: BORDER_COLOR,
@@ -173,5 +202,25 @@ const styles = StyleSheet.create({
   },
   view_list_skill: {
     flex: 1,
+  },
+  saveButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: BORDER_RADIUS,
+    borderWidth: BORDER_WIDTH,
+    borderColor: BORDER_COLOR,
+    backgroundColor: CONTENT_COLOR,
+    flexDirection: 'row',
+    height: 30,
+    width: 50,
+    marginTop: 12,
+    marginBottom: 5,
+    marginLeft: 5,
+  },
+  saveButtonText: {
+    color: BACKGROUND_COLOR,
+    fontFamily: FONT_FAMILY,
+    fontSize: FONT_SIZE,
+    borderBottomColor: '#fff',
   },
 });

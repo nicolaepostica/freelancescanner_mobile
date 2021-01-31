@@ -1,4 +1,5 @@
 import React from 'react';
+import {Platform} from 'react-native';
 import Authentication from '../authentication/Authentication';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
@@ -26,7 +27,7 @@ const App = () => {
       sound: true,
     },
     popInitialNotification: true,
-    requestPermissions: true,
+    requestPermissions: Platform.OS === 'ios',
   });
 
   return <Authentication />;

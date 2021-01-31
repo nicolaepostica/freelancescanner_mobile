@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Image, TextInput} from 'react-native';
+import {View, StyleSheet, Image, TextInput, TouchableOpacity, Text} from 'react-native';
 import 'react-native-gesture-handler';
 import AddSkillLanguageView from './add-skill-language-view';
 import update from 'immutability-helper';
@@ -29,6 +29,7 @@ export default class AddLanguage extends Component {
       slice: 50,
       languageAll: [],
       languageList: [],
+      toEditLanguages: [],
     };
     this.api = null;
   }
@@ -57,16 +58,34 @@ export default class AddLanguage extends Component {
         }),
       },
       () => {
-        axios.post(
-          `${BASE_URL}/api/v1/manage-languages/`,
-          {
-            list: [this.state.languageList[index]],
-            filter_id: this.state.filter_id,
-          },
-          {headers: {Authorization: this.state.token}},
-        );
+        const language = this.state.languageList[index];
+        const languageInEdit = this.state.toEditLanguages.find((n) => n.id === language.id);
+        if (languageInEdit) {
+          const languageIndex = this.state.toEditLanguages.map((m) => m.id).indexOf(language.id);
+          this.setState(({toEditLanguages}) => {
+            toEditLanguages.splice(languageIndex, 1);
+            return {toEditLanguages: toEditLanguages};
+          });
+        } else {
+          this.setState(({toEditLanguages}) => {
+            return {toEditLanguages: [...toEditLanguages, language]};
+          });
+        }
       },
     );
+  };
+
+  saveEditedLanguages = () => {
+    axios
+      .post(
+        `${BASE_URL}/api/v1/manage-languages/`,
+        {
+          list: this.state.toEditLanguages,
+          filter_id: this.state.filter_id,
+        },
+        {headers: {Authorization: this.state.token}},
+      )
+      .then(() => this.setState({toEditLanguages: []}));
   };
 
   search(nameKey, myArray) {
@@ -86,26 +105,35 @@ export default class AddLanguage extends Component {
   };
 
   render() {
-    const {search, languageList, slice} = this.state;
+    const {search, languageList, slice, toEditLanguages} = this.state;
     return (
       <View style={styles.container}>
-        <View style={styles.searchView}>
-          <View style={styles.searchArrow}>
-            <Image style={styles.icon} source={require('../../resources/icons/search.png')} />
-          </View>
-          <View style={styles.searchBarView}>
-            <TextInput
-              autoFocus={false}
-              returnKeyType="done"
-              style={styles.inputs}
-              placeholder="Enter language ..."
-              underlineColorAndroid="transparent"
-              value={search}
-              onChangeText={this.onChangeSearch}
-            />
+        <View style={{flexDirection: 'row'}}>
+          <View style={styles.searchView}>
+            <View style={styles.searchArrow}>
+              <Image style={styles.icon} source={require('../../resources/icons/search.png')} />
+            </View>
+            <View style={styles.searchBarView}>
+              <TextInput
+                autoFocus={false}
+                returnKeyType="done"
+                style={styles.inputs}
+                placeholder="Enter language ..."
+                underlineColorAndroid="transparent"
+                value={search}
+                onChangeText={this.onChangeSearch}
+              />
+            </View>
+            {toEditLanguages.length > 0 ? (
+              <TouchableOpacity style={styles.saveButton} onPress={this.saveEditedLanguages}>
+                <Text style={styles.saveButtonText}>Save</Text>
+              </TouchableOpacity>
+            ) : (
+              <></>
+            )}
           </View>
         </View>
-        <View style={styles.view_list_skill}>
+        <View style={styles.view_list_language}>
           <AddSkillLanguageView list={languageList} onValueChange={this.AddLanguageClick} slice={slice} />
         </View>
       </View>
@@ -122,6 +150,7 @@ const styles = StyleSheet.create({
     color: CONTENT_COLOR,
   },
   searchView: {
+    flex: 1,
     borderRadius: BORDER_RADIUS,
     borderWidth: BORDER_WIDTH,
     borderColor: BORDER_COLOR,
@@ -154,7 +183,27 @@ const styles = StyleSheet.create({
     height: 20,
     tintColor: CONTENT_COLOR,
   },
-  view_list_skill: {
+  view_list_language: {
     flex: 1,
+  },
+  saveButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: BORDER_RADIUS,
+    borderWidth: BORDER_WIDTH,
+    borderColor: BORDER_COLOR,
+    backgroundColor: CONTENT_COLOR,
+    flexDirection: 'row',
+    height: 30,
+    width: 50,
+    marginTop: 12,
+    marginBottom: 5,
+    marginLeft: 5,
+  },
+  saveButtonText: {
+    color: BACKGROUND_COLOR,
+    fontFamily: FONT_FAMILY,
+    fontSize: FONT_SIZE,
+    borderBottomColor: '#fff',
   },
 });
