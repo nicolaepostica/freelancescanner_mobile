@@ -29,7 +29,7 @@ import {
 } from '../theme';
 import axios from 'axios';
 import Notifications, {NotificationDetail} from '../feeds';
-import YandexKassa from '../payment';
+import Payment from '../payment';
 import Registration, {ForgotPassword} from '../registation';
 import EditTopic, {AddLanguage, AddSkill} from '../edit-topic';
 import {createDrawerNavigator} from '@react-navigation/drawer';
@@ -262,7 +262,7 @@ const HomeScreen = () => {
       />
       <Drawer.Screen
         name="Payment"
-        component={YandexKassa}
+        component={Payment}
         options={{
           drawerIcon: ({color}) => (
             <Image source={require('../../resources/icons/card.png')} style={[styles.icon, {tintColor: color}]} />

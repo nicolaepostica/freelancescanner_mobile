@@ -1,3 +1,5 @@
 import YandexKassa from './yandex';
+import Paypal from './paypal';
 
-export default YandexKassa;
+export default Paypal;
+export {YandexKassa};

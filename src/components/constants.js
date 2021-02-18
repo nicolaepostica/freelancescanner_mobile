@@ -1,7 +1,7 @@
 const PROTOCOL = 'https';
 export const DOMAIN = 'freelancescanner.com';
-export const BASE_URL = 'http://192.168.31.85:8001';
-// export const BASE_URL = `${PROTOCOL}://${DOMAIN}`;
+// export const BASE_URL = 'http://192.168.31.85:8001';
+export const BASE_URL = `${PROTOCOL}://${DOMAIN}`;
 export const GET_FEED_ALL_URL = `${BASE_URL}/api/v1/filter_project_all/`;
 export const GET_FAVORITES = `${BASE_URL}/api/v1/favorite/`;
 export const MANAGE_FAVORITES = `${BASE_URL}/api/v1/manage-favorites/`;
