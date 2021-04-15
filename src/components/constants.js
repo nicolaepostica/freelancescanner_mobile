@@ -1,4 +1,4 @@
-const PROTOCOL = 'http';
+const PROTOCOL = 'https';
 export const DOMAIN = 'freelancescanner.com';
 // export const BASE_URL = 'http://192.168.31.85:8001';
 export const BASE_URL = `${PROTOCOL}://${DOMAIN}`;
