@@ -10,12 +10,12 @@ export const READ_ONE_URL = `${BASE_URL}/api/v1/filter_project/`;
 export const MANAGE_SKILLS = `${BASE_URL}/api/v1/manage-skills/`;
 export const MANAGE_LANGUAGES = `${BASE_URL}/api/v1/manage-languages/`;
 export const READ_CURRENT_URL = `${BASE_URL}/api/v1/filter_project/`;
-export const WSS_URL = `wss://${DOMAIN}/channel/room/`;
 export const LOG_URL = `${BASE_URL}/api/v1/mobile-log/`;
 export const FEEDBACK_URL = `${BASE_URL}/api/v1/feedback/`;
 export const PAYMENT_URL = `${BASE_URL}/payment/yandex-pay/`;
 export const PAYPAL_URL = `${BASE_URL}/payment/get_paypal_form/`;
 export const GET_STATE_URL = `${BASE_URL}/api/v1/get-state/`;
+export const PADDLE_URL = `${BASE_URL}/payment/paddle_checkout_url/`;
 
 export const REGISTRATION = 'registration';
 export const RESET_PASSWORD = 'reset_password';
