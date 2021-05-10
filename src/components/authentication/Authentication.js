@@ -34,15 +34,16 @@ import Registration, {ForgotPassword} from '../registation';
 import EditTopic, {AddLanguage, AddSkill} from '../edit-topic';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import Settings from '../setting';
+import {Loader} from '../spinner';
+import Favorite from '../favorite';
+import FeedBack from '../feedback';
+
 const hamburgerMenuIcon = require('../../resources/icons/menu.png');
 const arrowLeft = require('../../resources/icons/arrow-left.png');
 const favoriteIcon = require('../../resources/icons/heart-solid.png');
 const notificationIcon = require('../../resources/icons/bell-solid.png');
 const disabledNotificationIcon = require('../../resources/icons/bell-slash-solid.png');
 const envelopeIcon = require('../../resources/icons/envelope.png');
-import {Loader} from '../spinner';
-import Favorite from '../favorite';
-import FeedBack from '../feedback';
 
 const AuthContext = createContext();
 
@@ -463,7 +464,7 @@ const Authentication = () => {
       .get(`${BASE_URL}/api/v1/get-user/`, {
         headers: {Authorization: token},
       })
-      .then(({data: {id: user_id, username, email}}) => {
+      .then(({data: {id: user_id, username}}) => {
         axios
           .get(`${BASE_URL}/api/v1/user/${user_id}/`, {
             headers: {Authorization: token},
