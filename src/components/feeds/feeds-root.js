@@ -245,7 +245,6 @@ export default class FeedsRoot extends Component {
         this.setStateReadAllNew();
       })
       .catch((e) => {
-        log('read_all', this.state, e, this.state.username);
         console.log(e);
       });
   };

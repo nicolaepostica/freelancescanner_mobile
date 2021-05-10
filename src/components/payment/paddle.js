@@ -14,10 +14,8 @@ class Paddle extends Component {
             init: true,
             token: '',
             username: '',
-            payment_process: false,
             subscribe_expiration: '',
             account_type: '',
-            url: ''
         };
     }
 
@@ -26,19 +24,6 @@ class Paddle extends Component {
             this.setState({token, username});
             this.getState();
         });
-    }
-
-    getPaymentForm() {
-        this.setState({payment_process: true});
-        axios
-            .post(PADDLE_URL, {}, {headers: {Authorization: this.state.token}})
-            .then(({data}) => {
-                console.log(data);
-                this.setState({url: `${BASE_URL}${data.payment_url}`});
-            })
-            .catch((e) => {
-                console.log(e);
-            });
     }
 
     getState() {
@@ -63,31 +48,76 @@ class Paddle extends Component {
     }
 
     render() {
-        const {payment_process, url, init} = this.state;
-        console.log(url);
+        const {init} = this.state;
         return (
             <View style={styles.root}>
-                {payment_process ? (
+                <View style={styles.container}>
+                    {init ? (
+                        <View style={styles.spinnerView}>
+                            <Spinner />
+                        </View>
+                    ) : (
+                        <>
+                            <Text style={styles.text}>Current Plan: "{this.state.account_type}"</Text>
+                            <Text style={styles.text}>Expiration time: "{this.state.subscribe_expiration}"</Text>
+                        </>
+                    )}
+                    <Text style={styles.text}>Subscribe for one more month!</Text>
+                    <TouchableOpacity style={styles.buttonContainer} activeOpacity={0.5} onPress={() => {
+                        this.props.navigation.navigate('PaymentProcess')
+                    }}>
+                        <Text style={styles.buttonText}>Pay</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
+    }
+}
+
+class PaddleProcess extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            init: true,
+            token: '',
+            url: ''
+        };
+    }
+
+    componentDidMount() {
+        AsyncStorage.multiGet(['userToken', ]).then(([[[], token]]) => {
+            this.setState({token, init: false});
+        }).then(() => {
+            this.getPaymentForm();
+        });
+    }
+
+    getPaymentForm() {
+        this.setState({payment_process: true});
+        axios
+            .post(PADDLE_URL, {}, {headers: {Authorization: this.state.token}})
+            .then(({data}) => {
+                this.setState({url: `${BASE_URL}${data.payment_url}`});
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+    }
+
+    render() {
+        const {init, url} = this.state;
+        return (
+            <View style={styles.root}>
+                {init ? (
+                    <View style={styles.container}>
+                        <View style={styles.spinnerView}>
+                            <Spinner />
+                        </View>
+                    </View>
+                ) : (
                     <WebView
                         source={{uri: url}}
                     />
-                ) : (
-                    <View style={styles.container}>
-                        {init ? (
-                            <View style={styles.spinnerView}>
-                                <Spinner />
-                            </View>
-                        ) : (
-                            <>
-                                <Text style={styles.text}>Current Plan: "{this.state.account_type}"</Text>
-                                <Text style={styles.text}>Expiration time: "{this.state.subscribe_expiration}"</Text>
-                            </>
-                        )}
-                        <Text style={styles.text}>Subscribe for one more month!</Text>
-                        <TouchableOpacity style={styles.buttonContainer} activeOpacity={0.5} onPress={() => this.getPaymentForm()}>
-                            <Text style={styles.buttonText}>Pay</Text>
-                        </TouchableOpacity>
-                    </View>
                 )}
             </View>
         );
@@ -128,3 +158,4 @@ const styles = StyleSheet.create({
 });
 
 export default Paddle;
+export {PaddleProcess};

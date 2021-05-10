@@ -29,7 +29,7 @@ import {
 } from '../theme';
 import axios from 'axios';
 import Notifications, {NotificationDetail} from '../feeds';
-import Payment from '../payment';
+import {Paddle, PaddleProcess} from '../payment';
 import Registration, {ForgotPassword} from '../registation';
 import EditTopic, {AddLanguage, AddSkill} from '../edit-topic';
 import {createDrawerNavigator} from '@react-navigation/drawer';
@@ -124,6 +124,49 @@ const SettingStack = ({navigation}) => {
   );
 };
 
+const NavigatorPayment = createStackNavigator();
+const PaymentStack = ({navigation}) => {
+    return (
+        <NavigatorPayment.Navigator initialRouteName="MainPayment" screenOptions={{gestureEnabled: true}}>
+            <NavigatorPayment.Screen
+                name="MainPayment"
+                component={Paddle}
+                options={{
+                    headerShown: true,
+                    headerTitle: 'Payment',
+                    headerStyle: {
+                        backgroundColor: HEADER_COLOR,
+                    },
+                    headerTintColor: TINT_COLOR,
+                    headerTitleStyle: {
+                        fontFamily: FONT_FAMILY_BOLD,
+                    },
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}>
+                            <Image style={styles.image} source={arrowLeft} />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
+            <NavigatorSetting.Screen
+                name="PaymentProcess"
+                component={PaddleProcess}
+                options={{
+                    headerShown: true,
+                    headerTitle: 'Payment Process',
+                    headerStyle: {
+                        backgroundColor: HEADER_COLOR,
+                    },
+                    headerTintColor: TINT_COLOR,
+                    headerTitleStyle: {
+                        fontFamily: FONT_FAMILY_BOLD,
+                    },
+                }}
+            />
+        </NavigatorPayment.Navigator>
+    );
+};
+
 const NavigatorNotification = createStackNavigator();
 const NotificationsStack = ({navigation}) => {
   const [silent, setSilent] = useState(false);
@@ -135,7 +178,6 @@ const NotificationsStack = ({navigation}) => {
   }, []);
 
   const switchSilent = () => {
-    console.log(silent);
     AsyncStorage.setItem('switchSilent', String(!silent));
     setSilent(!silent);
   };
@@ -262,7 +304,7 @@ const HomeScreen = () => {
       />
       <Drawer.Screen
         name="Payment"
-        component={Payment}
+        component={PaymentStack}
         options={{
           drawerIcon: ({color}) => (
             <Image source={require('../../resources/icons/card.png')} style={[styles.icon, {tintColor: color}]} />
@@ -453,8 +495,7 @@ const Authentication = () => {
             setDanger(false);
             initUserProfile(token);
           })
-          .catch((e) => {
-            console.log(e);
+          .catch(() => {
             setDanger(true);
             setLoading(false);
           });
