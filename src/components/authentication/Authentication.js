@@ -299,6 +299,10 @@ const SignInScreen = ({navigation}) => {
 
   const {signIn} = useContext(AuthContext);
 
+  const usernameToLowercase = () => {
+    setUsername(username.toLowerCase());
+  };
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <StatusBar backgroundColor={HEADER_COLOR} barStyle="light-content" />
@@ -320,6 +324,7 @@ const SignInScreen = ({navigation}) => {
                 onChangeText={setUsername}
                 onSubmitEditing={() => this.pass.focus()}
                 blurOnSubmit={false}
+                onBlur={() => usernameToLowercase()}
               />
             </View>
             <View style={[styles.inputContainer, danger ? styles.danger : {}]}>

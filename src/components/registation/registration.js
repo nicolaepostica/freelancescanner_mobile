@@ -75,7 +75,6 @@ export default class Registration extends Component {
   };
 
   submitUsername = () => {
-    // console.log('username');
     if (this.state.username.length > 0) {
       this.setState({missingUsername: false, dangerUsername: false});
       return true;
@@ -184,6 +183,7 @@ export default class Registration extends Component {
                   onSubmitEditing={() => this.email.focus()}
                   blurOnSubmit={false}
                   onBlur={() => {
+                    this.setState({username: username_val.toLowerCase()});
                     this.submitUsername();
                   }}
                 />
