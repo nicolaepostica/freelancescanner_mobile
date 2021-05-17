@@ -29,8 +29,8 @@ android {
         applicationId "com.freelancescanner"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 34
-        versionName "2.34"
+        versionCode 35
+        versionName "2.35"
     }
     splits {
         abi {
@@ -89,6 +89,8 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     implementation "com.flurry.android:analytics:12.7.0@aar"
+
+    implementation 'com.google.firebase:firebase-messaging:21.1.0'
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
