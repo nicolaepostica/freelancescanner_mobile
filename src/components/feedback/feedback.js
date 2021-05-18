@@ -12,58 +12,58 @@ import {
   HEADER_COLOR,
 } from '../theme';
 import axios from 'axios';
-import {FEEDBACK_URL} from '../constants';
+import {FEEDBACK_URL, GET_FEED_ALL_URL, GET_STATE_URL, GET_USER} from '../constants';
 import {Loader} from '../spinner';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class FeedBack extends Component {
   constructor(props) {
     super(props);
     this.state = {
       title: 'Feed New',
+      token: '',
       email: '',
       message: '',
       dangerMessage: false,
-      dangerEmail: false,
       loading: false,
       done: false,
     };
   }
 
+  componentDidMount(): void {
+    this.initSettings();
+  }
+
+  initSettings = () => {
+    AsyncStorage.getItem('userToken').then((token) => {
+      this.setState({token});
+      axios
+        .get(GET_USER, {headers: {Authorization: token}})
+        .then(({data: {email}}) => {
+          this.setState({email});
+        })
+        .catch(() => {});
+    });
+  };
+
   sendFeedBack = () => {
-    const {dangerEmail, message, email} = this.state;
+    const {message, email} = this.state;
     if (message.length === 0) {
       this.setState({dangerMessage: true});
     }
-    if (email.length === 0) {
-      this.setState({dangerEmail: true});
-    }
-    if (!dangerEmail && !(email.length === 0) && !(message.length === 0)) {
-      console.log('send feedback');
+    if (!(message.length === 0)) {
       this.setState({loading: true});
-      const data = {email: this.state.email, message: this.state.message};
+      const data = {email, message: message};
       axios
         .post(FEEDBACK_URL, data)
-        .then((response) => {
-          console.log(response);
+        .then(() => {
           this.setState({done: true});
         })
-        .catch((error) => {
+        .catch(() => {
           this.setState({loading: false, danger: true});
-          console.log(error);
         });
     }
   };
-
-  changeEmail(email = '') {
-    email = email.replace(' ', '');
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    if (reg.test(email) === false) {
-      this.setState({dangerEmail: true});
-    } else {
-      this.setState({dangerEmail: false});
-    }
-    this.setState({email: email});
-  }
 
   changeMessage(msg) {
     if (msg.length === 0) {
@@ -75,7 +75,7 @@ export default class FeedBack extends Component {
   }
 
   render() {
-    const {email, message, dangerMessage, dangerEmail, loading, done} = this.state;
+    const {message, dangerMessage, loading, done} = this.state;
     return (
       <SafeAreaView style={styles.safeAreaView}>
         <ScrollView
@@ -98,30 +98,15 @@ export default class FeedBack extends Component {
           ) : (
             <View style={styles.container}>
               <StatusBar backgroundColor={HEADER_COLOR} barStyle="light-content" />
-              <View style={[styles.inputContainer, dangerEmail ? styles.danger : {}]}>
-                <TextInput
-                  autoFocus={true}
-                  style={styles.emailText}
-                  placeholder="Email"
-                  underlineColorAndroid="transparent"
-                  value={email}
-                  onChangeText={(text) => this.changeEmail(text)}
-                  onSubmitEditing={() => this.message.focus()}
-                  blurOnSubmit={false}
-                  onBlur={() => this.setState({email: email.toLowerCase()})}
-                />
-              </View>
               <View style={[styles.inputContainerMessage, dangerMessage ? styles.danger : {}]}>
                 <TextInput
+                  autoFocus={true}
                   style={styles.messageText}
                   placeholder="Message"
                   multiline={true}
                   underlineColorAndroid="transparent"
                   value={message}
                   onChangeText={(text) => this.changeMessage(text)}
-                  ref={(input) => {
-                    this.message = input;
-                  }}
                 />
               </View>
               <TouchableOpacity style={[styles.buttonContainer]} activeOpacity={0.5} onPress={this.sendFeedBack}>

@@ -235,7 +235,6 @@ export default class FeedsRoot extends Component {
   }
 
   readAll = () => {
-    console.log('Read All!');
     this.setStateReadAll();
     axios
       .post(READ_ALL_URL, {param: 'clean'}, {headers: {Authorization: this.state.token}})

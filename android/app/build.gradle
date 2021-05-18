@@ -29,8 +29,8 @@ android {
         applicationId "com.freelancescanner"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 35
-        versionName "2.35"
+        versionCode 36
+        versionName "2.36"
     }
     splits {
         abi {
