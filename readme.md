@@ -13,7 +13,6 @@ Install [CocoaPod](https://guides.cocoapods.org/using/getting-started.html)<br>
 Install [NodeJs](https://nodejs.org/en/)<br>
 Install Xcode from AppStore
 
-
 <h3>Get project</h3>
 
 ```bash
@@ -41,7 +40,6 @@ Install [CocoaPod](https://guides.cocoapods.org/using/getting-started.html)<br>
 Install [NodeJs](https://nodejs.org/en/)<br>
 Install Xcode from AppStore
 
-
 <h3>Get project</h3>
 
 ```bash
@@ -63,4 +61,3 @@ $ npm run android
 
 $ npm run ios
 ```
-
