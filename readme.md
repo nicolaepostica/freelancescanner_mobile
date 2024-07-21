@@ -17,7 +17,7 @@ Install Xcode from AppStore
 <h3>Get project</h3>
 
 ```bash
-$ git clone https://gitlab.com/nicolae.postica2/freelancescanner_mobile.git
+$ git clone https://github.com/nicolaepostica/freelancescanner_mobile.git
 $ cd freelancescanner_mobile
 ```
 
@@ -45,7 +45,7 @@ Install Xcode from AppStore
 <h3>Get project</h3>
 
 ```bash
-$ git clone https://gitlab.com/nicolae.postica2/freelancescanner_mobile.git
+$ git clone https://github.com/nicolaepostica/freelancescanner_mobile.git
 $ cd freelancescanner_mobile
 ```
 
